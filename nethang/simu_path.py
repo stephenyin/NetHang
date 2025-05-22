@@ -492,7 +492,13 @@ class SimuPathManager:
         try:
             if os.path.exists(MODELS_FILE):
                 with open(MODELS_FILE, 'r') as f:
-                    return yaml.safe_load(f)
+                    models = yaml.safe_load(f)
+                    if 'models' in models:
+                        return models
+                    else:
+                        return {'models': {}}
+            else:
+                return {'models': {}}
         except Exception as e:
             app.logger.error(f"Error loading models: {e}")
             return {'models': {}}
