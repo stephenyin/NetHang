@@ -21,6 +21,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Create config directory
+      run: |
+        mkdir -p ~/.nethang
+        touch ~/.nethang/models.yaml
+        echo "version: '1.0.0'" > ~/.nethang/models.yaml
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

@@ -28,23 +28,27 @@ PATHS_FILE = os.path.join(CONFIG_PATH, 'paths.yaml')
 # Log file
 LOG_FILE = os.path.join(CONFIG_PATH, 'nethang.log')
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-
-# File handler with rotation
-file_handler = RotatingFileHandler(LOG_FILE, maxBytes=10000000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
+# Create config directory if it doesn't exist
+os.makedirs(CONFIG_PATH, exist_ok=True)
 
 # Create Flask app
 app = Flask(__name__)
-app.logger.addHandler(file_handler)
-app.logger.addHandler(console_handler)
+
+# Configure logging
+try:
+    file_handler = RotatingFileHandler(LOG_FILE, maxBytes=10000000, backupCount=5)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+except (IOError, PermissionError) as e:
+    # If we can't create the log file, just log to stderr
+    app.logger.warning(f"Could not create log file: {e}")
+    app.logger.warning("Logging to stderr instead")
+
 app.logger.setLevel(logging.INFO)
+app.logger.info('NetHang startup')
 
 # Import routes after app creation to avoid circular imports
 from . import routes
