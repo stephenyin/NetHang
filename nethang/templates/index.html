@@ -1,0 +1,2092 @@
+{% extends "base.html" %}
+
+{% block title %}NetHang - Simulation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Path Management Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-4">
+                <h5 class="card-title mb-0">Path(s)</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted me-1">{{ config.lan_interface }}</span>
+                        <i class="bi bi-ethernet text-primary me-1 fs-4"></i>
+                    </div>
+                    <i class="bi bi-arrow-left-right text-muted"></i>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-ethernet text-primary me-1 fs-4"></i>
+                        <span class="text-muted me-1">{{ config.wan_interface }}</span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPathModal">
+                <i class="bi bi-plus-circle"></i> Add Path
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Paths Table -->
+                <div class="col-md-5">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60%;">LAN ↔ WAN</th>
+                                    <th style="width: 10%;">Prot</th>
+                                    <th style="width: 10%;">Status</th>
+                                    <th style="width: 20%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if paths|length > 0 %}
+                                {% for path in paths %}
+                                <tr onclick="showPathContent({{ path.id }})" style="cursor: pointer;" class="path-row"
+                                    data-path-id="{{ path.id }}">
+                                    <td>
+                                        <div>
+                                            <strong class="text-muted">
+                                                {{ path.filter_settings.lan_ip }}{% if path.filter_settings.protocol !=
+                                                'ip' %}:{{ path.filter_settings.lan_port }}{% endif %} ↔
+                                                {{ path.filter_settings.wan_ip }}{% if path.filter_settings.protocol !=
+                                                'ip' %}:{{ path.filter_settings.wan_port }}{% endif %}
+                                            </strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge {% if path.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ path.filter_settings.protocol|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge {% if path.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ path.status|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                data-toggle="tooltip" data-placement="top" title="Edit Path"
+                                                onclick="event.stopPropagation(); editPath({{ path.id }})" {% if
+                                                path.status=='active' %}disabled{% endif %}>
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-toggle="tooltip" title="Delete Path"
+                                                onclick="event.stopPropagation(); deletePath({{ path.id }})" {% if
+                                                path.status=='active' %}disabled{% endif %}>
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            {% if path.status == 'active' %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-toggle="tooltip" title="Deactivate Path"
+                                                onclick="event.stopPropagation(); deactivatePath({{ path.id }})">
+                                                <i class="bi bi-stop-circle-fill"></i>
+                                            </button>
+                                            {% else %}
+                                            <button type="button" class="btn btn-sm btn-outline-success"
+                                                data-toggle="tooltip" title="Activate Path"
+                                                onclick="event.stopPropagation(); activatePath({{ path.id }})">
+                                                <i class="bi bi-play-circle-fill"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No paths found</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Path Content -->
+                <div class="col-md-7">
+                    <div id="pathContent" class="card" style="height: calc(100vh - 180px);">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <strong class="text-muted" id="pathDetailsHeader">
+                                </strong>
+                            </h5>
+                        </div>
+                        <div class="card-body" style="height: 100%; overflow-y: auto;">
+                            <div id="noPathSelected" class="text-center text-muted">
+                                <i class="bi bi-arrow-left-circle fs-1"></i>
+                                <p class="mt-2">Select a path to view details</p>
+                            </div>
+                            <div id="pathDetails" style="display: none;">
+                                <!-- <div class="mb-3">
+                                    <h6>Filter Settings</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <th>Protocol</th>
+                                            <td id="pathProtocol"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>LAN IP:Port</th>
+                                            <td id="pathLanIpPort"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>WAN IP:Port</th>
+                                            <td id="pathWanIpPort"></td>
+                                        </tr>
+                                    </table>
+                                </div> -->
+                                <div class="mb-3">
+                                    <!-- <h6>Simulation Settings</h6> -->
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <th style="width: 20%;">Mode</th>
+                                            <td id="pathSimMode"></td>
+                                        </tr>
+                                        <tr id="modelRow" style="display: none;">
+                                            <th style="width: 20%;">Model</th>
+                                            <td id="pathModel"></td>
+                                        </tr>
+                                        <tr id="uplinkRow">
+                                            <th style="width: 20%;">Uplink</th>
+                                            <td id="pathUplink"></td>
+                                        </tr>
+                                        <tr id="uplinkRestrictionRow" style="display: none;">
+                                            <!-- <th>Uplink Restrictions:</th> -->
+                                            <th style="width: 20%;"></th>
+                                            <td>
+                                                <table class="table table-sm mb-0">
+                                                    <tr>
+                                                        <th style="width: 30%;">Rate Limit</th>
+                                                        <td id="pathUplinkRate"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Queue Depth</th>
+                                                        <td id="pathUplinkQueueDepth"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Delay</th>
+                                                        <td id="pathUplinkDelay"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Loss</th>
+                                                        <td id="pathUplinkLoss"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Jitter</th>
+                                                        <td id="pathUplinkJitter"></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr id="downlinkRow">
+                                            <th style="width: 20%;">Downlink</th>
+                                            <td id="pathDownlink"></td>
+                                        </tr>
+                                        <tr id="downlinkRestrictionRow" style="display: none;">
+                                            <!-- <th>Downlink Restrictions:</th> -->
+                                            <th style="width: 20%;"></th>
+                                            <td>
+                                                <table class="table table-sm mb-0">
+                                                    <tr>
+                                                        <th style="width: 30%;">Rate Limit</th>
+                                                        <td id="pathDownlinkRate"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Queue Depth</th>
+                                                        <td id="pathDownlinkQueueDepth"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Delay</th>
+                                                        <td id="pathDownlinkDelay"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Loss</th>
+                                                        <td id="pathDownlinkLoss"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th style="width: 30%;">Jitter</th>
+                                                        <td id="pathDownlinkJitter"></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!-- <div class="mb-3"> -->
+                                <h6 class="text-center" style="font-weight: bold; display: none;"
+                                    id="trafficChartsHeader">Traffic Charts</h6>
+                                <div class="mb-3" id="throughputChartContainer"
+                                    style="position: relative; width: 100%; max-width: 100%; margin: 0 auto; height: 200px; min-height: 200px;">
+                                    <canvas id="throughputChart" style="width: 100%; height: 100%;"></canvas>
+                                </div>
+                                <div class="mb-3" id="queuingChartContainer"
+                                    style="position: relative; width: 100%; max-width: 100%; margin: 0 auto; height: 200px; min-height: 200px;">
+                                    <canvas id="queuingChart" style="width: 100%; height: 100%;"></canvas>
+                                </div>
+                                <div class="mb-3" id="lossChartContainer"
+                                    style="position: relative; width: 100%; max-width: 100%; margin: 0 auto; height: 200px; min-height: 200px;">
+                                    <canvas id="lossChart" style="width: 100%; height: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Path Modal -->
+<div class="modal fade" id="addPathModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Path</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPathForm">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Protocol</label>
+                            <select class="form-select" id="protocol-select" name="protocol" required>
+                                <option value="tcp">TCP</option>
+                                <option value="udp">UDP</option>
+                                <option value="ip">IP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">LAN IP</label>
+                            <input type="text" class="form-control" name="lan_ip" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">LAN Port</label>
+                            <input type="text" class="form-control" id="lan-port-input" name="lan_port" value="Any">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">WAN IP</label>
+                            <input type="text" class="form-control" name="wan_ip" value="0.0.0.0/0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">WAN Port</label>
+                            <input type="text" class="form-control" id="wan-port-input" name="wan_port" value="Any">
+                        </div>
+                    </div>
+
+                    <!-- <hr class="my-4"> -->
+
+                    <div class="col-md-12">
+                        <!-- <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-3">Simulation Settings</h4>
+                        </div> -->
+
+                        <!-- Simulation Mode Selection -->
+                        <div class="mb-4">
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="simulation_mode"
+                                    id="simulation-models-radio" value="model" checked>
+                                <label class="btn btn-outline-primary col-md-6"
+                                    for="simulation-models-radio">Models</label>
+
+                                <input type="radio" class="btn-check" name="simulation_mode"
+                                    id="simulation-custom-radio" value="custom">
+                                <label class="btn btn-outline-primary col-md-6" for="simulation-custom-radio">Custom
+                                    Settings</label>
+                            </div>
+                        </div>
+
+                        <!-- Models Tab Content -->
+                        <div class="tab-content" id="simulation-models">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <!-- <label for="path-model" class="form-label">Select Model</label> -->
+                                        <select class="form-select" id="path-model" name="model">
+                                            <option value="">Select Model</option>
+                                            {% for model in models['models'] %}
+                                            <option value="{{ model }}">{{ model }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Settings Tab Content -->
+                        <div class="tab-content" id="simulation-custom" style="display: none;">
+                            <div class="row">
+                                <!-- Uplink Settings -->
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-center" style="font-weight: bold;">Uplink Settings</h6>
+                                    <div class="mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="uplink_mode"
+                                                id="uplink-bypass-radio" value="bypass" checked>
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="uplink-bypass-radio">Bypass</label>
+
+                                            <input type="radio" class="btn-check" name="uplink_mode"
+                                                id="uplink-custom-radio" value="restrict">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="uplink-custom-radio">Restrict</label>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane" id="uplink-bypass" style="display: none;">
+                                            <p>Bypass All Uplink Traffic</p>
+                                        </div>
+                                        <div class="tab-pane" id="uplink-custom" style="display: none;">
+                                            <div class="row">
+                                                <!-- Throttle Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
+                                                        <select class="form-select" style="width: auto;"
+                                                            id="uplink-rate-type" name="uplink_rate_type">
+                                                            <option value="unlimited">Unlimited</option>
+                                                            <option value="custom">Custom</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="uplink-throttle-inputs"
+                                                        style="display: none;">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-bandwidth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-bandwidth" name="uplink_rate_limit"
+                                                                    value="32000000" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-burst" class="form-label"
+                                                                    style="font-size: 0.8rem;">Burst Size
+                                                                    (Kbytes)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-burst" name="uplink_burst" value="1000"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-queue-depth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Queue Depth
+                                                                    (Packets)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-queue-depth" name="uplink_qdepth"
+                                                                    value="1000" min="1" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Latency Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-delay" class="form-label"
+                                                                    style="font-size: 0.8rem;">Delay (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-delay" name="uplink_delay" value="0"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-jitter" class="form-label"
+                                                                    style="font-size: 0.8rem;">Jitter (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-jitter" name="uplink_jitter" value="0"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-reorder" class="form-label"
+                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
+                                                                <select class="form-select" id="uplink-reorder"
+                                                                    name="uplink_reorder" disabled>
+                                                                    <option value="false">No</option>
+                                                                    <option value="true">Yes</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Loss Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-packet-loss" class="form-label"
+                                                                    style="font-size: 0.8rem;">Loss Rate (%)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="uplink-packet-loss" name="uplink_loss" value="0"
+                                                                    step="0.1" min="0" max="100" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="uplink-loss-distribution" class="form-label"
+                                                                    style="font-size: 0.8rem;">Loss Distribution</label>
+                                                                <select class="form-select"
+                                                                    id="uplink-loss-distribution"
+                                                                    name="uplink_loss_distribution" disabled>
+                                                                    <option value="random">Random</option>
+                                                                    <option value="burst_low">Burst Low</option>
+                                                                    <option value="burst_medium">Burst Medium</option>
+                                                                    <option value="burst_high">Burst High</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Downlink Settings -->
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-center" style="font-weight: bold;">Downlink Settings</h6>
+                                    <div class="mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="downlink_mode"
+                                                id="downlink-bypass-radio" value="bypass" checked>
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="downlink-bypass-radio">Bypass</label>
+
+                                            <input type="radio" class="btn-check" name="downlink_mode"
+                                                id="downlink-custom-radio" value="restrict">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="downlink-custom-radio">Restrict</label>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane" id="downlink-bypass" style="display: none;">
+                                            <p>Bypass All Downlink Traffic</p>
+                                        </div>
+                                        <div class="tab-pane" id="downlink-custom" style="display: none;">
+                                            <div class="row">
+                                                <!-- Throttle Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
+                                                        <select class="form-select" style="width: auto;"
+                                                            id="downlink-rate-type" name="downlink_rate_type">
+                                                            <option value="unlimited">Unlimited</option>
+                                                            <option value="custom">Custom</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="downlink-throttle-inputs"
+                                                        style="display: none;">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-bandwidth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-bandwidth" name="downlink_rate_limit"
+                                                                    value="32000000" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-burst" class="form-label"
+                                                                    style="font-size: 0.8rem;">Burst Size
+                                                                    (Kbytes)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-burst" name="downlink_burst"
+                                                                    value="1000" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-queue-depth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Queue Depth
+                                                                    (Packets)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-queue-depth" name="downlink_qdepth"
+                                                                    value="1000" min="1" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Latency Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-delay" class="form-label"
+                                                                    style="font-size: 0.8rem;">Delay (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-delay" name="downlink_delay" value="0"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-jitter" class="form-label"
+                                                                    style="font-size: 0.8rem;">Jitter (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-jitter" name="downlink_jitter"
+                                                                    value="0" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-reorder" class="form-label"
+                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
+                                                                <select class="form-select" id="downlink-reorder"
+                                                                    name="downlink_reorder" disabled>
+                                                                    <option value="false">No</option>
+                                                                    <option value="true">Yes</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Loss Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-packet-loss" class="form-label"
+                                                                    style="font-size: 0.8rem;">Loss Rate (%)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="downlink-packet-loss" name="downlink_loss"
+                                                                    value="0" step="0.1" min="0" max="100" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="downlink-loss-distribution"
+                                                                    class="form-label" style="font-size: 0.8rem;">Loss
+                                                                    Distribution</label>
+                                                                <select class="form-select"
+                                                                    id="downlink-loss-distribution"
+                                                                    name="downlink_loss_distribution" disabled>
+                                                                    <option value="random">Random</option>
+                                                                    <option value="burst_low">Burst Low</option>
+                                                                    <option value="burst_medium">Burst Medium</option>
+                                                                    <option value="burst_high">Burst High</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitAddPath()">Add Path</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Path Modal -->
+<div class="modal fade" id="editPathModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Path</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Filter Settings</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>Protocol:</strong> <span id="edit-path-protocol"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>LAN:</strong> <span id="edit-path-lan"></span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>WAN:</strong> <span id="edit-path-wan"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="editPathForm">
+                    <input type="hidden" id="edit-path-id" name="path_id">
+
+                    <div class="col-md-12">
+                        <!-- Simulation Mode Selection -->
+                        <div class="mb-4">
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="edit_simulation_mode"
+                                    id="edit-simulation-models-radio" value="model">
+                                <label class="btn btn-outline-primary col-md-6"
+                                    for="edit-simulation-models-radio">Models</label>
+
+                                <input type="radio" class="btn-check" name="edit_simulation_mode"
+                                    id="edit-simulation-custom-radio" value="custom">
+                                <label class="btn btn-outline-primary col-md-6"
+                                    for="edit-simulation-custom-radio">Custom Settings</label>
+                            </div>
+                        </div>
+
+                        <!-- Models Tab Content -->
+                        <div class="tab-content" id="edit-simulation-models">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <select class="form-select" id="edit-path-model" name="model">
+                                            <option value="">Select Model</option>
+                                            {% for model in models['models'] %}
+                                            <option value="{{ model }}">{{ model }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Settings Tab Content -->
+                        <div class="tab-content" id="edit-simulation-custom" style="display: none;">
+                            <div class="row">
+                                <!-- Uplink Settings -->
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-center" style="font-weight: bold;">Uplink Settings</h6>
+                                    <div class="mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="edit_uplink_mode"
+                                                id="edit-uplink-bypass-radio" value="bypass">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="edit-uplink-bypass-radio">Bypass</label>
+
+                                            <input type="radio" class="btn-check" name="edit_uplink_mode"
+                                                id="edit-uplink-custom-radio" value="restrict">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="edit-uplink-custom-radio">Restrict</label>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane" id="edit-uplink-bypass" style="display: none;">
+                                            <p>Bypass All Uplink Traffic</p>
+                                        </div>
+                                        <div class="tab-pane" id="edit-uplink-custom" style="display: none;">
+                                            <div class="row">
+                                                <!-- Throttle Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
+                                                        <select class="form-select" style="width: auto;"
+                                                            id="edit-uplink-rate-type" name="edit_uplink_rate_type">
+                                                            <option value="unlimited">Unlimited</option>
+                                                            <option value="custom">Custom</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-uplink-throttle-inputs"
+                                                        style="display: none;">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-bandwidth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-bandwidth"
+                                                                    name="edit_uplink_rate_limit" value="32000000"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-burst" class="form-label"
+                                                                    style="font-size: 0.8rem;">Burst Size
+                                                                    (Kbytes)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-burst" name="edit_uplink_burst"
+                                                                    value="1000" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-queue-depth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Queue Depth
+                                                                    (Packets)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-queue-depth"
+                                                                    name="edit_uplink_queue_depth" value="1000" min="1"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Latency Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-delay" class="form-label"
+                                                                    style="font-size: 0.8rem;">Delay (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-delay" name="edit_uplink_delay"
+                                                                    value="0" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-jitter" class="form-label"
+                                                                    style="font-size: 0.8rem;">Jitter (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-jitter" name="edit_uplink_jitter"
+                                                                    value="0" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-reorder" class="form-label"
+                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
+                                                                <select class="form-select" id="edit-uplink-reorder"
+                                                                    name="edit_uplink_reorder" disabled>
+                                                                    <option value="false">No</option>
+                                                                    <option value="true">Yes</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Loss Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-packet-loss" class="form-label"
+                                                                    style="font-size: 0.8rem;">Loss Rate (%)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-uplink-packet-loss" name="edit_uplink_loss"
+                                                                    value="0" step="0.1" min="0" max="100" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-uplink-loss-distribution"
+                                                                    class="form-label" style="font-size: 0.8rem;">Loss
+                                                                    Distribution</label>
+                                                                <select class="form-select"
+                                                                    id="edit-uplink-loss-distribution"
+                                                                    name="edit_uplink_loss_distribution" disabled>
+                                                                    <option value="random">Random</option>
+                                                                    <option value="burst_low">Burst Low</option>
+                                                                    <option value="burst_medium">Burst Medium</option>
+                                                                    <option value="burst_high">Burst High</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Downlink Settings -->
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-center" style="font-weight: bold;">Downlink Settings</h6>
+                                    <div class="mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="edit_downlink_mode"
+                                                id="edit-downlink-bypass-radio" value="bypass">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="edit-downlink-bypass-radio">Bypass</label>
+
+                                            <input type="radio" class="btn-check" name="edit_downlink_mode"
+                                                id="edit-downlink-custom-radio" value="restrict">
+                                            <label class="btn btn-sm btn-outline-primary col-md-6"
+                                                for="edit-downlink-custom-radio">Restrict</label>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane" id="edit-downlink-bypass" style="display: none;">
+                                            <p>Bypass All Downlink Traffic</p>
+                                        </div>
+                                        <div class="tab-pane" id="edit-downlink-custom" style="display: none;">
+                                            <div class="row">
+                                                <!-- Throttle Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
+                                                        <select class="form-select" style="width: auto;"
+                                                            id="edit-downlink-rate-type" name="edit_downlink_rate_type">
+                                                            <option value="unlimited">Unlimited</option>
+                                                            <option value="custom">Custom</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-downlink-throttle-inputs"
+                                                        style="display: none;">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-bandwidth" class="form-label"
+                                                                    style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-bandwidth"
+                                                                    name="edit_downlink_rate_limit" value="32000000"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-burst" class="form-label"
+                                                                    style="font-size: 0.8rem;">Burst Size
+                                                                    (Kbytes)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-burst" name="edit_downlink_burst"
+                                                                    value="1000" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-queue-depth"
+                                                                    class="form-label" style="font-size: 0.8rem;">Queue
+                                                                    Depth (Packets)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-queue-depth"
+                                                                    name="edit_downlink_queue_depth" value="1000"
+                                                                    min="1" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Latency Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-delay" class="form-label"
+                                                                    style="font-size: 0.8rem;">Delay (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-delay" name="edit_downlink_delay"
+                                                                    value="0" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-jitter" class="form-label"
+                                                                    style="font-size: 0.8rem;">Jitter (ms)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-jitter"
+                                                                    name="edit_downlink_jitter" value="0" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-reorder" class="form-label"
+                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
+                                                                <select class="form-select" id="edit-downlink-reorder"
+                                                                    name="edit_downlink_reorder" disabled>
+                                                                    <option value="false">No</option>
+                                                                    <option value="true">Yes</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Loss Group -->
+                                                <div class="col-md-12 mb-3">
+                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-packet-loss"
+                                                                    class="form-label" style="font-size: 0.8rem;">Loss
+                                                                    Rate (%)</label>
+                                                                <input type="number" class="form-control"
+                                                                    id="edit-downlink-packet-loss"
+                                                                    name="edit_downlink_loss" value="0" step="0.1"
+                                                                    min="0" max="100" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label for="edit-downlink-loss-distribution"
+                                                                    class="form-label" style="font-size: 0.8rem;">Loss
+                                                                    Distribution</label>
+                                                                <select class="form-select"
+                                                                    id="edit-downlink-loss-distribution"
+                                                                    name="edit_downlink_loss_distribution" disabled>
+                                                                    <option value="random">Random</option>
+                                                                    <option value="burst_low">Burst Low</option>
+                                                                    <option value="burst_medium">Burst Medium</option>
+                                                                    <option value="burst_high">Burst High</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitEditPath()">Update Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Configuration Update Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="configUpdateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Configuration Update</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Configuration has been updated. The page will refresh in a moment...
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    function resizeCanvas() {
+        const throughputChartContainer = document.getElementById('throughputChartContainer');
+        const throughputChart = document.getElementById('throughputChart');
+        throughputChart.width = throughputChartContainer.offsetWidth;
+        throughputChart.height = throughputChartContainer.offsetHeight;
+
+        const queuingChartContainer = document.getElementById('queuingChartContainer');
+        const queuingChart = document.getElementById('queuingChart');
+        queuingChart.width = queuingChartContainer.offsetWidth;
+        queuingChart.height = queuingChartContainer.offsetHeight;
+
+        const lossChartContainer = document.getElementById('lossChartContainer');
+        const lossChart = document.getElementById('lossChart');
+        lossChart.width = lossChartContainer.offsetWidth;
+        lossChart.height = lossChartContainer.offsetHeight;
+
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    // Store paths data for easy access
+    const pathsData = {{ paths| tojson | safe }};
+    let lastManipulatedPathId = null;
+
+    function highlightPathRow(pathId) {
+        console.log('highlightPathRow', pathId);
+        // Remove selected class from all rows
+        document.querySelectorAll('.path-row').forEach(row => {
+            row.querySelectorAll('td').forEach(td => {
+                td.style.backgroundColor = 'white';
+            });
+        });
+
+        // Add selected class to the clicked row
+        const selectedRow = document.querySelector(`tr[data-path-id="${pathId}"]`).querySelectorAll('td');
+        if (selectedRow) {
+            console.log('selectedRow', selectedRow);
+            selectedRow.forEach(td => {
+                td.style.backgroundColor = 'rgba(13, 110, 253, 0.2)';
+            });
+        }
+    }
+
+    // Initialize Chart.js
+    let throughputChart = null;
+    let queuingChart = null;
+    let lossChart = null;
+    let chartData = {
+        labels: [],
+        data: []
+    };
+
+    function destroyChart() {
+        document.getElementById('trafficChartsHeader').style.display = 'none';
+
+        console.log('destroyChart', throughputChart);
+        if (throughputChart) {
+            console.log('destroying chart');
+            throughputChart.destroy();
+            throughputChart = null;
+        }
+        if (queuingChart) {
+            console.log('destroying queuingChart');
+            queuingChart.destroy();
+            queuingChart = null;
+        }
+        if (lossChart) {
+            console.log('destroying lossChart');
+            lossChart.destroy();
+            lossChart = null;
+        }
+    }
+
+    const chartCommonXConfig = {
+        type: 'category',
+        grid: {
+            display: true
+        },
+        ticks: {
+            autoSkip: true,
+            maxRotation: 45,
+            minRotation: 45,
+            maxTicksLimit: window.innerWidth < 600 ? 10 : 20
+        }
+    };
+
+    function initializeChart() {
+        return new Promise((resolve) => {
+            destroyChart();
+
+            const lastManipulatedPathId = localStorage.getItem('lastManipulatedPathId');
+            console.log('labels', chartData.labels);
+            console.log('data', chartData.data);
+
+            setTimeout(() => {
+                const thr_ctx = document.getElementById('throughputChart').getContext('2d');
+                throughputChart = new Chart(thr_ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                label: 'Uplink In',
+                                data: chartData.data['uplink']['bitRateIn'],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Uplink Out',
+                                data: chartData.data['uplink']['bitRateOut'],
+                                borderColor: 'rgba(75, 137, 220, 1)',
+                                backgroundColor: 'rgba(75, 137, 220, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Downlink In',
+                                data: chartData.data['downlink']['bitRateIn'],
+                                borderColor: 'rgba(229, 115, 115, 1)',
+                                backgroundColor: 'rgba(229, 115, 115, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Downlink Out',
+                                data: chartData.data['downlink']['bitRateOut'],
+                                borderColor: 'rgba(171, 71, 188, 1)',
+                                backgroundColor: 'rgba(171, 71, 188, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        // maintainAspectRatio: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            x: chartCommonXConfig,
+                            y: {
+                                beginAtZero: true,
+                                afterFit: function (scale) {
+                                    scale.width = 80;
+                                },
+                                position: 'left',
+                                title: { display: true, text: 'BitRate (Kbps)' }
+                            }
+                        }
+                    }
+                });
+
+                const que_ctx = document.getElementById('queuingChart').getContext('2d');
+                queuingChart = new Chart(que_ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                label: 'Uplink Queuing',
+                                data: chartData.data['uplink']['queuePackets'],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Downlink Queuing',
+                                data: chartData.data['downlink']['queuePackets'],
+                                borderColor: 'rgba(229, 115, 115, 1)',
+                                backgroundColor: 'rgba(229, 115, 115, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            x: chartCommonXConfig,
+                            y: {
+                                beginAtZero: true,
+                                afterFit: function (scale) {
+                                    scale.width = 80;
+                                },
+                                position: 'left',
+                                title: { display: true, text: 'Queuing Packets' }
+                            }
+                        }
+                    }
+                });
+                const loss_ctx = document.getElementById('lossChart').getContext('2d');
+                lossChart = new Chart(loss_ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                label: 'Uplink Loss',
+                                data: chartData.data['uplink']['queueDropRate'],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Downlink Loss',
+                                data: chartData.data['downlink']['queueDropRate'],
+                                borderColor: 'rgba(229, 115, 115, 1)',
+                                backgroundColor: 'rgba(229, 115, 115, 0.2)',
+                                fill: false,
+                                tension: 0.4
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            x: chartCommonXConfig,
+                            y: {
+                                beginAtZero: true,
+                                afterFit: function (scale) {
+                                    scale.width = 80;
+                                },
+                                position: 'left',
+                                title: { display: true, text: 'Loss (%)' }
+                            }
+                        }
+                    }
+                });
+                console.log('initializeChart finished');
+                resolve();
+            }, 0);
+        });
+    }
+
+    // Function to clear chart
+    function clearChart() {
+        chartData = {
+            labels: [],
+            data: []
+        };
+        destroyChart();
+    }
+
+    async function updateChart() {
+        const lastUpdatedData = localStorage.getItem('lastUpdatedData');
+        const lastManipulatedPathId = localStorage.getItem('lastManipulatedPathId');
+        if (lastUpdatedData) {
+            data = JSON.parse(lastUpdatedData);
+            chartData.labels = data.labels;
+            chartData.data = data.data[lastManipulatedPathId];
+            const path = pathsData.find(p => p.id === parseInt(lastManipulatedPathId));
+            if (path.status == 'active') {
+                // Initialize chart if needed
+                if (!throughputChart) {
+                    await initializeChart();
+                }
+
+                document.getElementById('trafficChartsHeader').style.display = 'block';
+
+                // Update chart
+                throughputChart.data.labels = chartData.labels;
+                throughputChart.data.datasets[0].data = chartData.data['uplink']['bitRateIn'];
+                throughputChart.data.datasets[1].data = chartData.data['uplink']['bitRateOut'];
+                throughputChart.data.datasets[2].data = chartData.data['downlink']['bitRateIn'];
+                throughputChart.data.datasets[3].data = chartData.data['downlink']['bitRateOut'];
+                throughputChart.update();
+                queuingChart.data.labels = chartData.labels;
+                queuingChart.data.datasets[0].data = chartData.data['uplink']['queuePackets'];
+                queuingChart.data.datasets[1].data = chartData.data['downlink']['queuePackets'];
+                queuingChart.update();
+                lossChart.data.labels = chartData.labels;
+                lossChart.data.datasets[0].data = chartData.data['uplink']['queueDropRate'];
+                lossChart.data.datasets[1].data = chartData.data['downlink']['queueDropRate'];
+                lossChart.update();
+
+            } else {
+                console.log('path is inactive, skipping chart initialization');
+            }
+        }
+    }
+
+    // Connect to SocketIO server
+    const socket = io();
+
+    // Update chart when new data is received
+    socket.on('update_chart', async function (data) {
+        localStorage.setItem('lastUpdatedData', JSON.stringify(data));
+        await updateChart();
+
+        // const lastManipulatedPathId = localStorage.getItem('lastManipulatedPathId');
+        // console.log('update_chart', lastManipulatedPathId, data.data[lastManipulatedPathId]);
+        // chartData.labels = data.labels;
+        // chartData.data = data.data[lastManipulatedPathId];
+
+        // const path = pathsData.find(p => p.id === parseInt(lastManipulatedPathId));
+        // if (path.status == 'active') {
+        //     // Initialize chart if needed
+        //     if (!throughputChart) {
+        //         await initializeChart();
+        //     }
+
+        //     document.getElementById('trafficChartsHeader').style.display = 'block';
+
+        //     // Update chart
+        //     throughputChart.data.labels = chartData.labels;
+        //     throughputChart.data.datasets[0].data = chartData.data['uplink']['bitRateIn'];
+        //     throughputChart.data.datasets[1].data = chartData.data['uplink']['bitRateOut'];
+        //     throughputChart.data.datasets[2].data = chartData.data['downlink']['bitRateIn'];
+        //     throughputChart.data.datasets[3].data = chartData.data['downlink']['bitRateOut'];
+        //     throughputChart.update();
+        //     queuingChart.data.labels = chartData.labels;
+        //     queuingChart.data.datasets[0].data = chartData.data['uplink']['queuePackets'];
+        //     queuingChart.data.datasets[1].data = chartData.data['downlink']['queuePackets'];
+        //     queuingChart.update();
+        //     lossChart.data.labels = chartData.labels;
+        //     lossChart.data.datasets[0].data = chartData.data['uplink']['queueDropRate'];
+        //     lossChart.data.datasets[1].data = chartData.data['downlink']['queueDropRate'];
+        //     lossChart.update();
+
+        // } else {
+        //     console.log('path is inactive, skipping chart initialization');
+        // }
+    });
+
+    // Handle configuration updates
+    socket.on('config_updated', function () {
+        console.log('Configuration updated, refreshing page...');
+        // Show a notification to the user
+        const toast = new bootstrap.Toast(document.getElementById('configUpdateToast'));
+        toast.show();
+
+        // Refresh the page after a short delay
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    });
+
+    // Initialize highlighting after the page is fully loaded
+    window.onload = function () {
+        // Get the last manipulated path ID from localStorage
+        const pathId = localStorage.getItem('lastManipulatedPathId');
+        console.log('pathId', pathId);
+
+        if (pathId) {
+            showPathContent(parseInt(pathId));
+        } else {
+            clearChart();
+        }
+    };
+
+    // Modify showPathContent to handle chart
+    async function showPathContent(pathId) {
+        console.log('showPathContent', pathId);
+        highlightPathRow(pathId);
+        localStorage.setItem('lastManipulatedPathId', pathId);
+
+        const path = pathsData.find(p => p.id === pathId);
+        if (!path) return;
+
+        // Hide no selection message and show details
+        document.getElementById('noPathSelected').style.display = 'none';
+        document.getElementById('pathDetails').style.display = 'block';
+
+        // Update path details
+        document.getElementById('pathSimMode').textContent = path.simu_settings.mode.toUpperCase();
+
+        const protBadge = `<span class="badge ${path.status === 'active' ? 'bg-success' : 'bg-secondary'}">${path.filter_settings.protocol.toUpperCase()}</span>`;
+        document.getElementById('pathDetailsHeader').innerHTML = `${protBadge} ${path.filter_settings.lan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.lan_port : ''} ↔ ${path.filter_settings.wan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.wan_port : ''}`;
+
+        // Show/hide model and uplink/downlink rows based on mode
+        const modelRow = document.getElementById('modelRow');
+        const uplinkRow = document.getElementById('uplinkRow');
+        const downlinkRow = document.getElementById('downlinkRow');
+        const uplinkRestrictionRow = document.getElementById('uplinkRestrictionRow');
+        const downlinkRestrictionRow = document.getElementById('downlinkRestrictionRow');
+
+        if (path.simu_settings.mode === 'model') {
+            modelRow.style.display = 'table-row';
+            uplinkRow.style.display = 'none';
+            downlinkRow.style.display = 'none';
+            uplinkRestrictionRow.style.display = 'none';
+            downlinkRestrictionRow.style.display = 'none';
+            const modelBadge = `<span class="badge ${path.status === 'active' ? 'bg-success' : 'bg-secondary'}">${path.simu_settings.model.toUpperCase()}</span>`;
+            document.getElementById('pathModel').innerHTML = modelBadge;
+        } else {
+            modelRow.style.display = 'none';
+            uplinkRow.style.display = 'table-row';
+            downlinkRow.style.display = 'table-row';
+
+            // Update uplink and downlink with badges
+            const uplinkBadge = `<span class="badge ${path.status === 'active' ? path.simu_settings.uplink.mode === 'bypass' ? 'bg-success' : 'bg-warning' : 'bg-secondary'}">${path.simu_settings.uplink.mode.toUpperCase()}</span>`;
+            const downlinkBadge = `<span class="badge ${path.status === 'active' ? path.simu_settings.downlink.mode === 'bypass' ? 'bg-success' : 'bg-warning' : 'bg-secondary'}">${path.simu_settings.downlink.mode.toUpperCase()}</span>`;
+            document.getElementById('pathUplink').innerHTML = uplinkBadge;
+            document.getElementById('pathDownlink').innerHTML = downlinkBadge;
+
+            // Show/hide and update restrict settings
+            if (path.simu_settings.uplink.mode === 'restrict' && path.simu_settings.uplink.restrict_settings) {
+                uplinkRestrictionRow.style.display = 'table-row';
+                const restrict = path.simu_settings.uplink.restrict_settings;
+                document.getElementById('pathUplinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
+                document.getElementById('pathUplinkQueueDepth').textContent = `${restrict.qdepth} packets`;
+                document.getElementById('pathUplinkDelay').textContent = `${restrict.delay} ms`;
+                document.getElementById('pathUplinkLoss').textContent = `${restrict.loss}%`;
+                document.getElementById('pathUplinkJitter').textContent = `${restrict.jitter} ms`;
+            } else {
+                uplinkRestrictionRow.style.display = 'none';
+            }
+
+            if (path.simu_settings.downlink.mode === 'restrict' && path.simu_settings.downlink.restrict_settings) {
+                downlinkRestrictionRow.style.display = 'table-row';
+                const restrict = path.simu_settings.downlink.restrict_settings;
+                document.getElementById('pathDownlinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
+                document.getElementById('pathDownlinkQueueDepth').textContent = `${restrict.qdepth} packets`;
+                document.getElementById('pathDownlinkDelay').textContent = `${restrict.delay} ms`;
+                document.getElementById('pathDownlinkLoss').textContent = `${restrict.loss}%`;
+                document.getElementById('pathDownlinkJitter').textContent = `${restrict.jitter} ms`;
+            } else {
+                downlinkRestrictionRow.style.display = 'none';
+            }
+        }
+
+        // Clear and reinitialize chart for new path
+        clearChart();
+        resizeCanvas();
+        await updateChart();
+    }
+
+    // Function to handle path activation
+    function activatePath(pathId) {
+        localStorage.setItem('lastManipulatedPathId', pathId);
+        fetch(`/api/paths/${pathId}/activate`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error activating path: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error activating path: ' + error);
+            });
+    }
+
+    // Function to handle path deactivation
+    function deactivatePath(pathId) {
+        localStorage.setItem('lastManipulatedPathId', pathId);
+        fetch(`/api/paths/${pathId}/deactivate`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error deactivating path: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error deactivating path: ' + error);
+            });
+    }
+
+    // Function to handle path deletion
+    function deletePath(pathId) {
+        if (confirm('Are you sure you want to delete this path?')) {
+            fetch(`/api/paths?id=${pathId}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        localStorage.removeItem('lastManipulatedPathId');
+                        location.reload();
+                    } else {
+                        alert('Error deleting path: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error deleting path: ' + error);
+                });
+        }
+    }
+
+    // Function to handle path editing
+    function editPath(pathId) {
+        localStorage.setItem('lastManipulatedPathId', pathId);
+        const path = pathsData.find(p => p.id === pathId);
+        if (!path) return;
+
+        // Set the path ID in the hidden input
+        document.getElementById('edit-path-id').value = pathId;
+
+        // Set filter information
+        document.getElementById('edit-path-protocol').textContent = path.filter_settings.protocol.toUpperCase();
+        document.getElementById('edit-path-lan').textContent = `${path.filter_settings.lan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.lan_port : ''}`;
+        document.getElementById('edit-path-wan').textContent = `${path.filter_settings.wan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.wan_port : ''}`;
+
+        // Set simulation mode
+        if (path.simu_settings.mode === 'model') {
+            document.getElementById('edit-simulation-models-radio').checked = true;
+            document.getElementById('edit-simulation-models').style.display = 'block';
+            document.getElementById('edit-simulation-custom').style.display = 'none';
+            document.getElementById('edit-path-model').value = path.simu_settings.model || '';
+        } else {
+            document.getElementById('edit-simulation-custom-radio').checked = true;
+            document.getElementById('edit-simulation-models').style.display = 'none';
+            document.getElementById('edit-simulation-custom').style.display = 'block';
+
+            // Set uplink settings
+            if (path.simu_settings.uplink.mode === 'bypass') {
+                document.getElementById('edit-uplink-bypass-radio').checked = true;
+                document.getElementById('edit-uplink-custom').style.display = 'none';
+                document.getElementById('edit-uplink-bypass').style.display = 'block';
+                document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                    input.disabled = true;
+                });
+            } else {
+                document.getElementById('edit-uplink-custom-radio').checked = true;
+                document.getElementById('edit-uplink-custom').style.display = 'block';
+                document.getElementById('edit-uplink-bypass').style.display = 'none';
+                document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                    input.disabled = false;
+                });
+                if (path.simu_settings.uplink.restrict_settings) {
+                    const restrict = path.simu_settings.uplink.restrict_settings;
+                    const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                    document.getElementById('edit-uplink-rate-type').value = isUnlimited ? 'unlimited' : 'custom';
+                    document.getElementById('edit-uplink-throttle-inputs').style.display = isUnlimited ? 'none' : 'flex';
+                    document.getElementById('edit-uplink-bandwidth').value = restrict.rate_limit;
+                    // document.getElementById('edit-uplink-bandwidth').disabled = isUnlimited;
+                    // document.getElementById('edit-uplink-bandwidth').style.display = isUnlimited ? 'none' : 'block';
+                    document.getElementById('edit-uplink-burst').value = restrict.burst_size;
+                    document.getElementById('edit-uplink-queue-depth').value = Math.max(1, restrict.qdepth || 1000);
+                    // document.getElementById('edit-uplink-queue-depth').disabled = isUnlimited;
+                    // document.getElementById('edit-uplink-queue-depth').style.display = isUnlimited ? 'none' : 'block';
+                    document.getElementById('edit-uplink-delay').value = restrict.delay;
+                    document.getElementById('edit-uplink-jitter').value = restrict.jitter;
+                    document.getElementById('edit-uplink-reorder').value = restrict.reorder_allowed;
+                    document.getElementById('edit-uplink-packet-loss').value = restrict.loss;
+                    document.getElementById('edit-uplink-loss-distribution').value = restrict.loss_distribution || 'random';
+                }
+            }
+
+            // Set downlink settings
+            if (path.simu_settings.downlink.mode === 'bypass') {
+                document.getElementById('edit-downlink-bypass-radio').checked = true;
+                document.getElementById('edit-downlink-custom').style.display = 'none';
+                document.getElementById('edit-downlink-bypass').style.display = 'block';
+                document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                    input.disabled = true;
+                });
+            } else {
+                document.getElementById('edit-downlink-custom-radio').checked = true;
+                document.getElementById('edit-downlink-custom').style.display = 'block';
+                document.getElementById('edit-downlink-bypass').style.display = 'none';
+                document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                    input.disabled = false;
+                });
+                if (path.simu_settings.downlink.restrict_settings) {
+                    const restrict = path.simu_settings.downlink.restrict_settings;
+                    const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                    document.getElementById('edit-downlink-rate-type').value = isUnlimited ? 'unlimited' : 'custom';
+                    document.getElementById('edit-downlink-throttle-inputs').style.display = isUnlimited ? 'none' : 'flex';
+                    document.getElementById('edit-downlink-bandwidth').value = restrict.rate_limit;
+                    // document.getElementById('edit-downlink-bandwidth').disabled = isUnlimited;
+                    // document.getElementById('edit-downlink-bandwidth').style.display = isUnlimited ? 'none' : 'block';
+                    document.getElementById('edit-downlink-burst').value = restrict.burst_size;
+                    document.getElementById('edit-downlink-queue-depth').value = Math.max(1, restrict.qdepth || 1000);
+                    // document.getElementById('edit-downlink-queue-depth').disabled = isUnlimited;
+                    // document.getElementById('edit-downlink-queue-depth').style.display = isUnlimited ? 'none' : 'block';
+                    document.getElementById('edit-downlink-delay').value = restrict.delay;
+                    document.getElementById('edit-downlink-jitter').value = restrict.jitter;
+                    document.getElementById('edit-downlink-reorder').value = restrict.reorder_allowed;
+                    document.getElementById('edit-downlink-packet-loss').value = restrict.loss;
+                    document.getElementById('edit-downlink-loss-distribution').value = restrict.loss_distribution || 'random';
+                }
+            }
+        }
+
+        // Show the modal
+        const editModal = new bootstrap.Modal(document.getElementById('editPathModal'));
+        editModal.show();
+    }
+
+    // Handle simulation mode radio buttons in Edit Path modal
+    document.getElementById('edit-simulation-models-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-simulation-models').style.display = 'block';
+            document.getElementById('edit-simulation-custom').style.display = 'none';
+        }
+    });
+
+    document.getElementById('edit-simulation-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-simulation-models').style.display = 'none';
+            document.getElementById('edit-simulation-custom').style.display = 'block';
+
+            // Select Bypass radio buttons for both uplink and downlink
+            document.getElementById('edit-uplink-bypass-radio').checked = true;
+            document.getElementById('edit-uplink-custom').style.display = 'none';
+            document.getElementById('edit-uplink-bypass').style.display = 'block';
+            document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                input.disabled = true;
+            });
+
+            document.getElementById('edit-downlink-bypass-radio').checked = true;
+            document.getElementById('edit-downlink-custom').style.display = 'none';
+            document.getElementById('edit-downlink-bypass').style.display = 'block';
+            document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                input.disabled = true;
+            });
+        }
+    });
+
+    // Handle uplink mode radio buttons in Edit Path modal
+    document.getElementById('edit-uplink-bypass-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-uplink-custom').style.display = 'none';
+            document.getElementById('edit-uplink-bypass').style.display = 'block';
+            // Disable all uplink parameter inputs
+            document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                input.disabled = true;
+            });
+        }
+    });
+
+    document.getElementById('edit-uplink-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-uplink-custom').style.display = 'block';
+            document.getElementById('edit-uplink-bypass').style.display = 'none';
+            // Enable all uplink parameter inputs
+            document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                input.disabled = false;
+            });
+        }
+    });
+
+    // Handle downlink mode radio buttons in Edit Path modal
+    document.getElementById('edit-downlink-bypass-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-downlink-custom').style.display = 'none';
+            document.getElementById('edit-downlink-bypass').style.display = 'block';
+            // Disable all downlink parameter inputs
+            document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                input.disabled = true;
+            });
+        }
+    });
+
+    document.getElementById('edit-downlink-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('edit-downlink-custom').style.display = 'block';
+            document.getElementById('edit-downlink-bypass').style.display = 'none';
+            // Enable all downlink parameter inputs
+            document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                input.disabled = false;
+            });
+        }
+    });
+
+    // Function to validate IP address
+    function isValidIP(ip) {
+        // Handle CIDR notation
+        const ipPart = ip.split('/')[0];
+
+        // Split IP into octets
+        const octets = ipPart.split('.');
+
+        // Check if we have exactly 4 octets
+        if (octets.length !== 4) return false;
+
+        // Check each octet
+        for (let octet of octets) {
+            // Check if octet is a number between 0 and 255
+            const num = parseInt(octet);
+            if (isNaN(num) || num < 0 || num > 255) return false;
+        }
+
+        // If CIDR notation is present, validate the subnet mask
+        if (ip.includes('/')) {
+            const mask = parseInt(ip.split('/')[1]);
+            if (isNaN(mask) || mask < 0 || mask > 32) return false;
+        }
+
+        return true;
+    }
+
+    // Function to validate form IP addresses
+    function validateFormIPs(formData) {
+        const lanIP = formData.get('lan_ip');
+        const wanIP = formData.get('wan_ip');
+
+        if (!isValidIP(lanIP)) {
+            alert('Invalid LAN IP address format. Please enter a valid IP address (e.g., 192.168.1.1 or 192.168.1.0/24)');
+            return false;
+        }
+
+        if (!isValidIP(wanIP)) {
+            alert('Invalid WAN IP address format. Please enter a valid IP address (e.g., 192.168.1.1 or 192.168.1.0/24)');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Handle form submission for edit path
+    function submitEditPath() {
+        const form = document.getElementById('editPathForm');
+        const formData = new FormData(form);
+        const pathId = formData.get('path_id');
+
+        // Check if in models mode and no model is selected
+        if (document.getElementById('edit-simulation-models-radio').checked) {
+            const selectedModel = formData.get('model');
+            if (!selectedModel) {
+                alert('Please select a model in Models mode.');
+                return;
+            }
+        }
+
+        // Validate queue depth values
+        const uplinkQdepth = parseInt(formData.get('edit_uplink_queue_depth'));
+        const downlinkQdepth = parseInt(formData.get('edit_downlink_queue_depth'));
+
+        if (uplinkQdepth === 0 || downlinkQdepth === 0) {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            return;
+        }
+
+        // Find the original path data
+        const originalPath = pathsData.find(p => p.id === parseInt(pathId));
+        if (!originalPath) return;
+
+        // Construct updated path object (keeping filter settings unchanged)
+        const updatedPath = {
+            ...originalPath,
+            simu_settings: {
+                mode: formData.get('edit_simulation_mode'),
+                model: formData.get('model'),
+                uplink: {
+                    mode: formData.get('edit_uplink_mode'),
+                    restrict_settings: formData.get('edit_uplink_mode') === 'restrict' ? {
+                        rate_limit: parseInt(formData.get('edit_uplink_rate_limit')),
+                        burst_size: parseInt(formData.get('edit_uplink_burst')),
+                        qdepth: uplinkQdepth,
+                        delay: parseInt(formData.get('edit_uplink_delay')),
+                        loss: parseFloat(formData.get('edit_uplink_loss')),
+                        jitter: parseInt(formData.get('edit_uplink_jitter')),
+                        reorder_allowed: formData.get('edit_uplink_reorder') === 'true',
+                        loss_distribution: formData.get('edit_uplink_loss_distribution')
+                    } : null
+                },
+                downlink: {
+                    mode: formData.get('edit_downlink_mode'),
+                    restrict_settings: formData.get('edit_downlink_mode') === 'restrict' ? {
+                        rate_limit: parseInt(formData.get('edit_downlink_rate_limit')),
+                        burst_size: parseInt(formData.get('edit_downlink_burst')),
+                        qdepth: downlinkQdepth,
+                        delay: parseInt(formData.get('edit_downlink_delay')),
+                        loss: parseFloat(formData.get('edit_downlink_loss')),
+                        jitter: parseInt(formData.get('edit_downlink_jitter')),
+                        reorder_allowed: formData.get('edit_downlink_reorder') === 'true',
+                        loss_distribution: formData.get('edit_downlink_loss_distribution')
+                    } : null
+                }
+            }
+        };
+
+        // Send PUT request
+        fetch(`/api/paths`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedPath)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Close the modal
+                    const editModal = bootstrap.Modal.getInstance(document.getElementById('editPathModal'));
+                    editModal.hide();
+                    // Reload the page to show updated data
+                    location.reload();
+                } else {
+                    alert('Error updating path: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error updating path: ' + error);
+            });
+    }
+
+    // Handle form submission
+    function submitAddPath() {
+        const form = document.getElementById('addPathForm');
+        const formData = new FormData(form);
+
+        // Check if in models mode and no model is selected
+        if (document.getElementById('simulation-models-radio').checked) {
+            const selectedModel = formData.get('model');
+            if (!selectedModel) {
+                alert('Please select a model in Models mode.');
+                return;
+            }
+        }
+
+        // Validate queue depth values
+        const uplinkQdepth = parseInt(formData.get('uplink_qdepth'));
+        const downlinkQdepth = parseInt(formData.get('downlink_qdepth'));
+
+        if (uplinkQdepth === 0 || downlinkQdepth === 0) {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            return;
+        }
+
+        // Validate IP addresses
+        if (!validateFormIPs(formData)) {
+            return;
+        }
+
+        // Construct path object
+        const path = {
+            name: formData.get('name'),
+            status: 'inactive',
+            filter_settings: {
+                protocol: formData.get('protocol'),
+                lan_ip: formData.get('lan_ip'),
+                lan_port: formData.get('lan_port'),
+                wan_ip: formData.get('wan_ip'),
+                wan_port: formData.get('wan_port')
+            },
+            simu_settings: {
+                mode: formData.get('simulation_mode'),
+                model: formData.get('model'),
+                uplink: {
+                    mode: formData.get('uplink_mode'),
+                    restrict_settings: formData.get('uplink_mode') === 'restrict' ? {
+                        rate_limit: parseInt(formData.get('uplink_rate_limit')),
+                        burst_size: parseInt(formData.get('uplink_burst')),
+                        qdepth: uplinkQdepth,
+                        delay: parseInt(formData.get('uplink_delay')),
+                        loss: parseFloat(formData.get('uplink_loss')),
+                        jitter: parseInt(formData.get('uplink_jitter')),
+                        reorder_allowed: formData.get('uplink_reorder') === 'true',
+                        loss_distribution: formData.get('uplink_loss_distribution')
+                    } : null
+                },
+                downlink: {
+                    mode: formData.get('downlink_mode'),
+                    restrict_settings: formData.get('downlink_mode') === 'restrict' ? {
+                        rate_limit: parseInt(formData.get('downlink_rate_limit')),
+                        burst_size: parseInt(formData.get('downlink_burst')),
+                        qdepth: downlinkQdepth,
+                        delay: parseInt(formData.get('downlink_delay')),
+                        loss: parseFloat(formData.get('downlink_loss')),
+                        jitter: parseInt(formData.get('downlink_jitter')),
+                        reorder_allowed: formData.get('downlink_reorder') === 'true',
+                        loss_distribution: formData.get('downlink_loss_distribution')
+                    } : null
+                }
+            }
+        };
+
+        // Send POST request
+        fetch('/api/paths', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(path)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    localStorage.setItem('lastManipulatedPathId', data.path_id);
+                    location.reload();
+                } else {
+                    alert('Error adding path: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error adding path: ' + error);
+            });
+    }
+
+    // Handle simulation mode radio buttons in Add Path modal
+    document.getElementById('simulation-models-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('simulation-models').style.display = 'block';
+            document.getElementById('simulation-custom').style.display = 'none';
+        }
+    });
+
+    document.getElementById('simulation-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('simulation-models').style.display = 'none';
+            document.getElementById('simulation-custom').style.display = 'block';
+        }
+    });
+
+    // Handle uplink mode radio buttons in Add Path modal
+    document.getElementById('uplink-bypass-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('uplink-custom').style.display = 'none';
+            document.getElementById('uplink-bypass').style.display = 'block';
+            // Disable all uplink parameter inputs
+            document.querySelectorAll('#uplink-custom input').forEach(input => {
+                input.disabled = true;
+            });
+        }
+    });
+
+    document.getElementById('uplink-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('uplink-custom').style.display = 'block';
+            document.getElementById('uplink-bypass').style.display = 'none';
+            // Enable all uplink parameter inputs
+            document.querySelectorAll('#uplink-custom input').forEach(input => {
+                input.disabled = false;
+            });
+        }
+    });
+
+    // Handle downlink mode radio buttons in Add Path modal
+    document.getElementById('downlink-bypass-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('downlink-custom').style.display = 'none';
+            document.getElementById('downlink-bypass').style.display = 'block';
+            // Disable all downlink parameter inputs
+            document.querySelectorAll('#downlink-custom input').forEach(input => {
+                input.disabled = true;
+            });
+        }
+    });
+
+    document.getElementById('downlink-custom-radio').addEventListener('change', function () {
+        if (this.checked) {
+            document.getElementById('downlink-custom').style.display = 'block';
+            document.getElementById('downlink-bypass').style.display = 'none';
+            // Enable all downlink parameter inputs
+            document.querySelectorAll('#downlink-custom input').forEach(input => {
+                input.disabled = false;
+            });
+        }
+    });
+
+    // Initialize the modal state when it's shown
+    document.getElementById('addPathModal').addEventListener('show.bs.modal', function () {
+        // Reset form
+        document.getElementById('addPathForm').reset();
+
+        // Set default states
+        document.getElementById('simulation-models-radio').checked = true;
+        document.getElementById('simulation-models').style.display = 'block';
+        document.getElementById('simulation-custom').style.display = 'none';
+
+        // Set default states for uplink and downlink
+        document.getElementById('uplink-bypass-radio').checked = true;
+        document.getElementById('uplink-custom').style.display = 'none';
+        document.getElementById('uplink-bypass').style.display = 'block';
+        document.querySelectorAll('#uplink-custom input').forEach(input => {
+            input.disabled = true;
+        });
+
+        document.getElementById('downlink-bypass-radio').checked = true;
+        document.getElementById('downlink-custom').style.display = 'none';
+        document.getElementById('downlink-bypass').style.display = 'block';
+        document.querySelectorAll('#downlink-custom input').forEach(input => {
+            input.disabled = true;
+        });
+
+        // Set default rate type to unlimited and hide inputs
+        document.getElementById('uplink-rate-type').value = 'unlimited';
+        document.getElementById('downlink-rate-type').value = 'unlimited';
+        document.getElementById('uplink-throttle-inputs').style.display = 'none';
+        document.getElementById('downlink-throttle-inputs').style.display = 'none';
+        document.getElementById('uplink-bandwidth').value = '32000000';
+        document.getElementById('downlink-bandwidth').value = '32000000';
+        document.getElementById('uplink-bandwidth').disabled = true;
+        document.getElementById('downlink-bandwidth').disabled = true;
+
+        // Set default values for queue depth
+        document.getElementById('uplink-queue-depth').value = '1000';
+        document.getElementById('downlink-queue-depth').value = '1000';
+    });
+
+    // Handle protocol select change
+    document.getElementById('protocol-select').addEventListener('change', function () {
+        const selectedProtocol = this.value;
+        const lanPortInput = document.getElementById('lan-port-input');
+        const wanPortInput = document.getElementById('wan-port-input');
+
+        if (selectedProtocol === 'ip') {
+            lanPortInput.disabled = true;
+            wanPortInput.disabled = true;
+        } else {
+            lanPortInput.disabled = false;
+            wanPortInput.disabled = false;
+        }
+    });
+
+    // Add event listeners for rate type changes
+    document.getElementById('uplink-rate-type').addEventListener('change', function () {
+        const inputs = document.getElementById('uplink-throttle-inputs');
+        const bandwidth = document.getElementById('uplink-bandwidth');
+        const queueDepth = document.getElementById('uplink-queue-depth');
+        if (this.value === 'unlimited') {
+            inputs.style.display = 'none';
+            bandwidth.value = '32000000';
+            bandwidth.disabled = true;
+            queueDepth.value = '1000';
+        } else {
+            inputs.style.display = 'flex';
+            bandwidth.disabled = false;
+        }
+    });
+
+    document.getElementById('downlink-rate-type').addEventListener('change', function () {
+        const inputs = document.getElementById('downlink-throttle-inputs');
+        const bandwidth = document.getElementById('downlink-bandwidth');
+        const queueDepth = document.getElementById('downlink-queue-depth');
+        if (this.value === 'unlimited') {
+            inputs.style.display = 'none';
+            bandwidth.value = '32000000';
+            bandwidth.disabled = true;
+            queueDepth.value = '1000';
+        } else {
+            inputs.style.display = 'flex';
+            bandwidth.disabled = false;
+        }
+    });
+
+    document.getElementById('edit-uplink-rate-type').addEventListener('change', function () {
+        const inputs = document.getElementById('edit-uplink-throttle-inputs');
+        const bandwidth = document.getElementById('edit-uplink-bandwidth');
+        const queueDepth = document.getElementById('edit-uplink-queue-depth');
+        if (this.value === 'unlimited') {
+            inputs.style.display = 'none';
+            bandwidth.value = '32000000';
+            bandwidth.disabled = true;
+            queueDepth.value = '1000';
+        } else {
+            inputs.style.display = 'flex';
+            bandwidth.disabled = false;
+        }
+    });
+
+    document.getElementById('edit-downlink-rate-type').addEventListener('change', function () {
+        const inputs = document.getElementById('edit-downlink-throttle-inputs');
+        const bandwidth = document.getElementById('edit-downlink-bandwidth');
+        const queueDepth = document.getElementById('edit-downlink-queue-depth');
+        if (this.value === 'unlimited') {
+            inputs.style.display = 'none';
+            bandwidth.value = '32000000';
+            bandwidth.disabled = true;
+            queueDepth.value = '1000';
+        } else {
+            inputs.style.display = 'flex';
+            bandwidth.disabled = false;
+        }
+    });
+
+    // Add event listeners for queue depth validation
+    document.getElementById('uplink-queue-depth').addEventListener('input', function () {
+        if (this.value === '0') {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            this.value = '1';
+        }
+    });
+
+    document.getElementById('downlink-queue-depth').addEventListener('input', function () {
+        if (this.value === '0') {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            this.value = '1';
+        }
+    });
+
+    document.getElementById('edit-uplink-queue-depth').addEventListener('input', function () {
+        if (this.value === '0') {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            this.value = '1';
+        }
+    });
+
+    document.getElementById('edit-downlink-queue-depth').addEventListener('input', function () {
+        if (this.value === '0') {
+            alert('Queue Depth cannot be 0. Minimum value is 1.');
+            this.value = '1';
+        }
+    });
+</script>
+{% endblock %}

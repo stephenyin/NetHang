@@ -1,0 +1,178 @@
+version: v0.1.0
+
+components:
+  delay_components:
+    delay_basis_lan: &delay_basis_lan
+      delay: 2
+    delay_basis_intercity: &delay_basis_intercity
+      delay: 15
+    delay_basis_intercontinental: &delay_basis_intercontinental
+      delay: 150
+    delay_basis_cellular_3G: &delay_basis_cellular_3G
+      delay: 50
+    delay_basis_cellular_2G: &delay_basis_cellular_2G
+      delay: 150
+
+  jitter_components:
+    jitter_basis_fine_wireless: &jitter_basis_good_wireless
+      slot:
+        - 5
+        - 100
+    jitter_basis_bad_wireless: &jitter_basis_bad_wireless
+      slot:
+        - 100
+        - 10
+    jitter_mild_congestion: &jitter_mild_congestion
+      slot:
+        - 1000
+        - 100
+    jitter_severe_congestion: &jitter_severe_congestion
+      slot:
+        - 4000
+        - 2000
+    jitter__handover: &jitter_wireless_handover
+      jitter: 1000
+      slot:
+        - 500
+        - 100
+    jitter_wireless_low_snr: &jitter_wireless_low_snr
+      slot:
+        - 40
+        - 50
+
+  loss_components:
+    loss_wireless_low_snr: &loss_wireless_low_snr
+      loss: 10
+    loss_basis_intercontinental: &loss_basis_intercontinental
+      loss: 20
+
+  rate_components:
+    rate_1000M: &rate_1000M
+      rate_limit: 1000000
+      qdepth: 1000
+    rate_1M_qdepth_1: &rate_1M_qdepth_1
+      rate_limit: 1000
+      qdepth: 1
+    rate_1M_qdepth_150: &rate_1M_qdepth_150
+      rate_limit: 1000
+      qdepth: 150
+    rate_100M_qdepth_1000: &rate_100M_qdepth_1000
+      rate_limit: 100000
+      qdepth: 1000
+    rate_cellular_4G: &rate_cellular_4G
+      rate_limit: 40000
+      qdepth: 1000
+    rate_cellular_3G: &rate_cellular_3G
+      rate_limit: 2000
+      qdepth: 1000
+    rate_cellular_2G: &rate_cellular_2G
+      rate_limit: 100
+      qdepth: 1000
+    accu_qdepth_108_with_loss5: &accu_qdepth_108
+      rate_limit: 10
+      qdepth: 108
+    accu_qdepth_10: &accu_qdepth_10
+      rate_limit: 10
+      qdepth: 10
+    accu_qdepth_1000: &accu_qdepth_1000
+      rate_limit: 10
+      qdepth: 1000
+    accu_qdepth_10000: &accu_qdepth_10000
+      rate_limit: 10
+      qdepth: 10000
+
+models:
+  2G_with_handover_test:
+    description: ""
+    global:
+      uplink:
+        <<: [*rate_cellular_2G, *delay_basis_cellular_2G]
+      downlink:
+        <<: [*rate_cellular_2G, *delay_basis_cellular_2G]
+    timeline:
+  2G_with_handover:
+    description: ""
+    global:
+      uplink:
+        <<: [*rate_cellular_2G, *delay_basis_cellular_2G]
+      downlink:
+        <<: [*rate_cellular_2G, *delay_basis_cellular_2G]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 5.5
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*loss_wireless_low_snr, *jitter_wireless_low_snr]
+        downlink:
+          <<: [*loss_wireless_low_snr, *jitter_wireless_low_snr]
+      - duration: 5.5
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  3G_with_handover:
+    description: ""
+    global:
+      uplink:
+        <<: [*rate_cellular_3G, *delay_basis_cellular_3G]
+      downlink:
+        <<: [*rate_cellular_3G, *delay_basis_cellular_3G]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 3.5
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 3.5
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  4G_with_handover:
+    description: ""
+    global:
+      uplink:
+        <<: [*rate_cellular_4G, *delay_basis_intercity]
+      downlink:
+        <<: [*rate_cellular_4G, *delay_basis_intercity]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 2.5
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 2.5
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  4G_with_isp_throttle:
+    description: ""
+    global:
+      uplink:
+        <<: [*rate_1M_qdepth_150, *delay_basis_intercity]
+      downlink:
+        <<: [*rate_1M_qdepth_1, *delay_basis_intercity]
+    timeline:

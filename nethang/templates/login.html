@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}NetHang - Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body text-center py-4">
+                <!-- Logo and App Name -->
+                <div class="mb-4">
+                    <img src="{{ url_for('static', filename='images/logo-bright-trans.png') }}" alt="NetHang Logo"
+                        class="img-fluid" style="width: 90%;">
+                </div>
+                <hr>
+                <!-- Error Message -->
+                {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                <!-- Login Form -->
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}About - NetHang{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">About NetHang</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Header with Logo -->
+                    <div class="text-center mb-4">
+                        <img src="{{ url_for('static', filename='images/icon-bright-trans.png') }}" alt="NetHang Logo" height="96" class="mb-3">
+                        <h2 class="fw-bold">NetHang</h2>
+                        <p class="text-muted">A web-based tool for simulating network quality</p>
+                    </div>
+
+                    <!-- Grid Layout for Information -->
+                    <div class="row g-4">
+                        <!-- Version Information -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title fw-bold">Version</h5>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <span class="text-muted">Application Version:</span>
+                                        <span class="fw-bold">v{{ version }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <span class="text-muted">Models Version:</span>
+                                        <span class="fw-bold">{{ models_version }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Copyright Information -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title fw-bold">Copyright</h5>
+                                    <p class="mb-1">© 2024 Hang Yin. All rights reserved.</p>
+                                    <p class="mb-0">Licensed under the MIT License</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Links -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title fw-bold">Links</h5>
+                                    <div class="d-flex flex-column gap-2">
+                                        <a href="https://github.com/stephenyin/NetHang" target="_blank" class="text-decoration-none">
+                                            <i class="bi bi-github"></i> GitHub Repository
+                                        </a>
+                                        <a href="https://github.com/stephenyin/NetHang" target="_blank" class="text-decoration-none">
+                                            <i class="bi bi-house"></i> Project Homepage
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title fw-bold">Contact</h5>
+                                    <div class="d-flex flex-column gap-2">
+                                        <a href="mailto:stephen.yin.h@gmail.com" class="text-decoration-none">
+                                            <i class="bi bi-envelope"></i> stephen.yin.h@gmail.com
+                                        </a>
+                                        <a href="https://www.linkedin.com/in/hang-yin-stephen" target="_blank" class="text-decoration-none">
+                                            <i class="bi bi-linkedin"></i> LinkedIn Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

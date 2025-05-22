@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}NetHang - Settings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">Settings</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Interface Settings Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Interface Settings</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="networkSettingsForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="lanInterface" class="form-label">LAN Interface</label>
+                                            <select class="form-select" id="lanInterface" name="lan_interface" required>
+                                                <option value="">Select LAN Interface</option>
+                                                {% for interface in interfaces %}
+                                                <option value="{{ interface.name }}" {% if
+                                                    config.lan_interface==interface.name %}selected{% endif %}>
+                                                    {{ interface.name }} ({{ interface.ip }})
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="form-text">The interface connects to the LOCAL network</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="wanInterface" class="form-label">WAN Interface</label>
+                                            <select class="form-select" id="wanInterface" name="wan_interface" required>
+                                                <option value="">Select WAN Interface</option>
+                                                {% for interface in interfaces %}
+                                                <option value="{{ interface.name }}" {% if
+                                                    config.wan_interface==interface.name %}selected{% endif %}>
+                                                    {{ interface.name }} ({{ interface.ip }})
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="form-text">The interface connects to the EXTERNAL network</div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <!-- Mark Value Range Section -->
+                    <!-- <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Mark Value Range</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="lowerMark" class="form-label">Lower Value</label>
+                                        <input type="number" class="form-control" id="lowerMark" name="lower_mark"
+                                            min="0" max="65535" value="{{ config.lower_mark }}" required>
+                                        <div class="form-text">Must be between 0 and 65535</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="upperMark" class="form-label">Upper Value</label>
+                                        <input type="number" class="form-control" id="upperMark" name="upper_mark"
+                                            min="0" max="65535" value="{{ config.upper_mark }}" required>
+                                        <div class="form-text">Must be between 0 and 65535</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- Password Change Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Change Password</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" minlength="6">
+                                    <div class="form-text">Leave blank to keep current password</div>
+                                </div>
+
+                                <div class="mb-3 col-md-6">
+                                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password"
+                                        minlength="6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Add mark value validation
+        function validateMarkValues() {
+            const lowerMark = parseInt($('#lowerMark').val());
+            const upperMark = parseInt($('#upperMark').val());
+
+            if (lowerMark >= upperMark) {
+                alert('Lower mark value must be less than upper mark value');
+                return false;
+            }
+
+            if (upperMark - lowerMark < 16) {
+                alert('Difference between upper and lower mark values must be at least 16, to maintain the available range of mark values');
+                return false;
+            }
+
+            return true;
+        }
+
+        $('#networkSettingsForm').submit(function (e) {
+            e.preventDefault();
+
+            // if (!validateMarkValues()) {
+            //     return;
+            // }
+
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+
+            if (password && password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const formData = {
+                lan_interface: $('#lanInterface').val(),
+                wan_interface: $('#wanInterface').val(),
+                password: password || null
+            };
+
+            $.ajax({
+                url: '/api/settings',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert('Settings saved successfully');
+                        location.reload();
+                    } else {
+                        alert('Error saving settings: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Error saving settings');
+                }
+            });
+        });
+
+        // Add real-time validation for mark values
+        $('#lowerMark, #upperMark').on('change', function() {
+            validateMarkValues();
+        });
+    });
+</script>
+{% endblock %}

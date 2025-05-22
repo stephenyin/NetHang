@@ -1,0 +1,28 @@
+# Include README and LICENSE
+include README.md
+include LICENSE
+
+# Include requirements
+include requirements.txt
+
+# Include Python package files
+recursive-include nethang *.py
+recursive-include nethang/static *
+recursive-include nethang/templates *
+
+# Include configuration files
+recursive-include config_files *
+
+# Include test files
+recursive-include tests *.py
+
+# Exclude cache files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+
+# Exclude development files
+exclude .git
+exclude .gitignore
+exclude .env
+exclude *.log
