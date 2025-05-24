@@ -978,6 +978,19 @@
     </div>
 </div>
 
+<!-- Backend Connection Error Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="backendErrorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Backend Connection Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Unable to connect to the backend server. Please check if the server is running.
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -985,6 +998,38 @@
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
+
+    // Initialize error toast
+    const backendErrorToast = new bootstrap.Toast(document.getElementById('backendErrorToast'), {
+        autohide: false
+    });
+
+    // Connect to SocketIO server
+    const socket = io({
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 5000
+    });
+
+    // Handle connection errors
+    socket.on('connect_error', function(error) {
+        console.error('Connection error:', error);
+        backendErrorToast.show();
+    });
+
+    socket.on('connect', function() {
+        console.log('Connected to backend');
+        backendErrorToast.hide();
+    });
+
+    socket.on('disconnect', function(reason) {
+        console.log('Disconnected from backend:', reason);
+        if (reason === 'io server disconnect') {
+            // Server initiated disconnect, show error
+            backendErrorToast.show();
+        }
+    });
 
     function resizeCanvas() {
         const throughputChartContainer = document.getElementById('throughputChartContainer');
@@ -1274,9 +1319,6 @@
             }
         }
     }
-
-    // Connect to SocketIO server
-    const socket = io();
 
     // Update chart when new data is received
     socket.on('update_chart', async function (data) {
