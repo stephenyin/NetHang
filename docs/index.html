@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetHang - Help</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .list-group-item.active {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Help Documentation</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <!-- Navigation -->
+                        <div class="list-group">
+                            <a href="#overview" class="list-group-item list-group-item-action">Overview</a>
+                            <a href="#paths" class="list-group-item list-group-item-action">Paths</a>
+                            <a href="#protocols" class="list-group-item list-group-item-action">Protocols</a>
+                            <a href="#simulation" class="list-group-item list-group-item-action">Simulation</a>
+                            <a href="#monitoring" class="list-group-item list-group-item-action">Monitoring</a>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <!-- Content -->
+                        <div id="overview" class="mb-5">
+                            <h4>Overview</h4>
+                            <p>NetHang is a network simulation tool that allows you to create and manage network paths between LAN and WAN interfaces. It helps you simulate various network conditions and monitor their effects on traffic.</p>
+                        </div>
+
+                        <div id="paths" class="mb-5">
+                            <h4>Paths</h4>
+                            <p>A path represents a connection between your LAN and WAN interfaces. Each path can be configured with:</p>
+                            <ul>
+                                <li>Protocol (TCP, UDP, or IP)</li>
+                                <li>Source and destination IP addresses</li>
+                                <li>Port numbers (for TCP and UDP)</li>
+                                <li>Simulation settings</li>
+                            </ul>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Note:</strong> For IP protocol paths, port numbers are not required.
+                            </div>
+                        </div>
+
+                        <div id="protocols" class="mb-5">
+                            <h4>Protocols</h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">TCP</h5>
+                                            <p class="card-text">Transmission Control Protocol - Provides reliable, ordered, and error-checked delivery of data.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">UDP</h5>
+                                            <p class="card-text">User Datagram Protocol - Provides fast but unreliable delivery of data.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">IP</h5>
+                                            <p class="card-text">Internet Protocol - Basic network layer protocol without port numbers.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="simulation" class="mb-5">
+                            <h4>Simulation</h4>
+                            <p>You can simulate network conditions in two ways:</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Models</h5>
+                                            <p class="card-text">Pre-configured network models that simulate common network conditions.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Custom Settings</h5>
+                                            <p class="card-text">Configure specific network parameters:</p>
+                                            <ul>
+                                                <li>Bandwidth (Kbps)</li>
+                                                <li>Queue Depth (Packets)</li>
+                                                <li>Delay (ms)</li>
+                                                <li>Packet Loss (%)</li>
+                                                <li>Jitter (ms)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="monitoring" class="mb-5">
+                            <h4>Monitoring</h4>
+                            <p>The application provides real-time monitoring of network conditions through three charts:</p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Throughput</h5>
+                                            <p class="card-text">Shows the bit rate for both uplink and downlink traffic.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Queuing</h5>
+                                            <p class="card-text">Displays the number of packets in the queue.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Loss</h5>
+                                            <p class="card-text">Shows the packet loss rate over time.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
