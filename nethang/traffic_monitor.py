@@ -143,13 +143,6 @@ class TrafficMonitor:
         egress_bytes_diff = tc_stats_egress.get('bytes', 0) - previous_egress_bytes
         egress_packets_diff = tc_stats_egress.get('packets', 0) - previous_egress_packets
 
-        print(f"id: {id}")
-        print(f"egress_tc: {egress_tc}")
-        print(f"tc_stats_egress: {tc_stats_egress}")
-        print(f"tc_stats_egress.backlog: {tc_stats_egress.get('backlog', 0)}")
-        print(f"tc_stats_egress.backlog_packets: {tc_stats_egress.get('backlog_packets', 0)}")
-        print(f"tc_stats_egress.drops: {tc_stats_egress.get('drops', 0)}")
-
         return {
             "ingress": {
                 "bytes": iptables_stats['bytes'],

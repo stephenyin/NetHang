@@ -661,7 +661,6 @@ class SimuPathManager:
     @staticmethod
     def emit_chart_data(chart_data_callback):
         """Send chart data to all connected clients."""
-        print(f"chart_data_callback: {chart_data_callback['data']['9528']}")
         socketio.emit('update_chart', {
             'labels': chart_data_callback['labels'],
             'data': chart_data_callback['data']
