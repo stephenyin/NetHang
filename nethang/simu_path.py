@@ -548,12 +548,16 @@ class SimuPathManager:
             yaml.dump(paths, f)
         self.emit_config_update()  # Emit config update event
 
-    def reset_all_paths(self):
-        """Rebuild all paths according to the config"""
-
-        # Deactivate all paths
+    def deactivate_all_paths(self):
+        """Deactivate all paths"""
         for path in self.paths.values():
             path.deactivate()
+
+    def reset_all_paths(self):
+        """Reset all paths according to the config"""
+
+        # Deactivate all paths
+        self.deactivate_all_paths()
 
         # Update paths.yaml
         paths_data = self.load_paths()

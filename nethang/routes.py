@@ -13,7 +13,8 @@ import hashlib
 import subprocess
 import tomli
 import yaml
-# import prctl
+import sys
+import signal
 from . import app, ID_LOCK_FILE, ADMIN_USERNAME, PATHS_FILE
 from flask import render_template, request, jsonify, redirect, url_for, session, g
 from functools import wraps
@@ -32,6 +33,16 @@ chart_data = {
     'labels': [None for _ in range(100)],
     'data': [None for _ in range(100)]
 }
+
+def cleanup(sig, frame):
+    """Cleanup the application"""
+    app.logger.info(f"Received signal {sig}, performing cleanup...")
+    SimuPathManager().deactivate_all_paths()
+    sys.exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGINT, cleanup)  # Handles Ctrl+C
+signal.signal(signal.SIGTERM, cleanup)  # Handles kill/termination
 
 def check_privileges():
     """Check if the application has sufficient privileges for tc and iptables"""
