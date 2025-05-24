@@ -23,13 +23,6 @@ from nethang.extensions import socketio
 @dataclass
 class SimuSettings:
     """Network simulation settings for a direction (uplink/downlink)"""
-    # mode: str  # 'bypass', 'restrict'
-    # rate_limit: Optional[int] = None  # For restrict mode (in bps)
-    # qdepth: Optional[int] = None  # For restrict mode
-    # loss: Optional[float] = None  # For restrict mode (percentage)
-    # delay: Optional[int] = None  # For restrict mode (ms)
-    # jitter: Optional[int] = None  # For restrict mode (ms)
-    # reorder_allowed: Optional[bool] = None  # For restrict mode
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -56,7 +49,7 @@ class SimuSettings:
         elif key == 'jitter':
             return 0
         else:
-            raise ValueError(f"Invalid key: {key}, please check the paths.yaml")
+            app.logger.warning(f"Not implemented key: {key}")
 
     def __eq__(self, other):
         return (
@@ -76,12 +69,6 @@ class SimuSettings:
 @dataclass
 class FilterSettings:
     """Filter settings for a network path"""
-    # protocol: str  # 'ip', 'tcp', or 'udp'
-    # lan_ip: str
-    # lan_port: str  # 'Any' for IP protocol
-    # wan_ip: str
-    # wan_port: str  # 'Any' for IP protocol
-    # mark: int  # iptables mark value
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -157,33 +144,34 @@ class SimuPath:
             reorder_allowed : bool = False
             ):
 
-        app.logger.info(f"direction_: {direction_}")
-        app.logger.info(f"opt: {opt}")
-        app.logger.info(f"rate_limit: {rate_limit}")
-        app.logger.info(f"rate_ceil: {rate_ceil}")
-        app.logger.info(f"rate_burst: {rate_burst}")
-        app.logger.info(f"rate_cburst: {rate_cburst}")
-        app.logger.info(f"qdepth: {qdepth}")
-        app.logger.info(f"loss: {loss}")
-        app.logger.info(f"delay: {delay}")
-        app.logger.info(f"jitter: {jitter}")
-        app.logger.info(f"jitter_dist: {jitter_dist}")
-        app.logger.info(f"slot: {slot}")
-        app.logger.info(f"reorder_allowed: {reorder_allowed}")
-
         class_str_ = ''
+        # If rate_limit is greater than MAX_RATE, using MAX_RATE as rate
+        # Otherwise, using rate_limit as rate
         if rate_limit > SimuPathManager.MAX_RATE:
             class_str_ += ' rate {}Gbit'.format(SimuPathManager.MAX_RATE / 1000000)
         else:
             class_str_ += ' rate {}Kbit'.format(rate_limit)
 
-        if rate_ceil > SimuPathManager.MAX_RATE:
-            class_str_ += ' ceil {}Gbit'.format(SimuPathManager.MAX_RATE / 1000000)
+        # If rate_ceil is greater than or equal to MAX_RATE, using rate_limit as ceil
+        # Otherwise, using rate_ceil as ceil
+        if rate_ceil >= SimuPathManager.MAX_RATE:
+            class_str_ += ' ceil {}Kbit'.format(rate_limit)
         else:
             class_str_ += ' ceil {}Kbit'.format(rate_ceil)
 
-        class_str_ += ' burst {}KB'.format(rate_burst)
-        class_str_ += ' cburst {}KB'.format(rate_cburst)
+        # If rate_burst is less than or equal to 0, using rate_limit / 80 as burst
+        # Otherwise, using rate_burst as burst
+        if rate_burst <= 0:
+            class_str_ += ' burst {}KB'.format(round(rate_limit / 80, 2))
+        else:
+            class_str_ += ' burst {}KB'.format(rate_burst)
+
+        # If rate_cburst is less than or equal to 0, using rate_limit / 80 as cburst
+        # Otherwise, using rate_cburst as cburst
+        if rate_cburst <= 0:
+            class_str_ += ' cburst {}KB'.format(round(rate_limit / 80, 2))
+        else:
+            class_str_ += ' cburst {}KB'.format(rate_cburst)
 
         netem_str_ = ''
         netem_str_ += f' limit {qdepth}'
@@ -331,14 +319,7 @@ class SimuPath:
             self.status = "inactive"
 
     def create(self):
-        """Create the path in system by creating a new iptables rule
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -s 192.168.60.23 -d 107.9.9.1 -p udp --sport 5201 --dport 30000 -j MARK --set-mark 32
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -d 107.9.9.2 -p udp --sport 5201 --dport 30000 -j MARK --set-mark 32
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -s 0.0.0.0 -d 107.9.9.3 -p udp --sport 5201 --dport 30000 -j MARK --set-mark 32
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -s 0.0.0.0/0 -d 107.9.9.4 -p udp --sport 5201 --dport 30000 -j MARK --set-mark 32
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -p udp --sport 5201 --dport 30000 -j MARK --set-mark 32
-        iptables -t mangle -A FORWARD -i enp0s9 -o enp0s10 -j MARK --set-mark 32
-        """
+        """ Create the path in system by creating a new iptables rule """
 
         def create_iptables_rule(direction_ : str):
             iptables_str_ = ''

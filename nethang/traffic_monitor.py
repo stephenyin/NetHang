@@ -197,8 +197,6 @@ class TrafficMonitor:
             stats_[str(id)] = self._create_base_stats(current_time, id)
             stats_[str(id)]['trafficStats']['uplink'] = self._get_direction_stats('uplink', iptables_uplink_stats, tc_wan_output, current_time, id)
             stats_[str(id)]['trafficStats']['downlink'] = self._get_direction_stats('downlink', iptables_downlink_stats, tc_lan_output, current_time, id)
-            # if stats_[str(id)]['trafficStats']['uplink'] == {} or stats_[str(id)]['trafficStats']['downlink'] == {}:
-            #     continue
 
             for direction in ['uplink', 'downlink']:
                 if stats_[str(id)]['trafficStats'][direction] and stats_[str(id)]['trafficStats'][direction] != {}:
@@ -242,72 +240,13 @@ class TrafficMonitor:
         """Main monitoring loop"""
         self.start_time = time.time()
         while self.running:
-            # try:
             self.stats = self._get_current_stats()
-
-            # Call callback function if provided
-            # if self.stats_callback:
-            #     self.stats_callback(new_stats)
-
-            # time.sleep(self.interval - 0.02)
-            # Simulate real-time data
-            # value = random.randint(0, 100)
-            # timestamp = time.strftime('%H:%M:%S')
-
-            # Update chart data (keep last 100 points)
-            # chart_data['labels'].append(timestamp)
-            # chart_data['data'].append(value)
-            # if len(chart_data['labels']) > 100:
-            #     chart_data['labels'].pop(0)
-            #     chart_data['data'].pop(0)
 
             # Call callback function if provided
             if self.stats_callback:
                 self.stats_callback(self.data_to_emit)
 
-            # print(f"chart_data: {chart_data}")
-            time.sleep(self.interval)  # Update every second
-
-            # except Exception as e:
-            #     print(f"Error in monitor loop: {e}")
-            #     time.sleep(1)
-
-        # if self.stats_callback:
-        #     print("Updating last data with empty data")
-        #     # Update the last data with empty data
-        #     self.stats_callback({
-        #     'labels': [None for _ in range(100)],
-        #     'data': {
-        #         str(id): {
-        #             'uplink': {
-        #                 'bitRateIn': [None for _ in range(100)],
-        #                 'bitRateOut': [None for _ in range(100)],
-        #                 'packetRateIn': [None for _ in range(100)],
-        #                 'packetRateOut': [None for _ in range(100)],
-        #                 'bytesIn': [None for _ in range(100)],
-        #                 'bytesOut': [None for _ in range(100)],
-        #                 'packetsIn': [None for _ in range(100)],
-        #                 'packetsOut': [None for _ in range(100)],
-        #                 'queuePackets': [None for _ in range(100)],
-        #                 'queueDropPackets': [None for _ in range(100)],
-        #                 'queueDropRate': [None for _ in range(100)],
-        #             },
-        #             'downlink': {
-        #                 'bitRateIn': [None for _ in range(100)],
-        #                 'bitRateOut': [None for _ in range(100)],
-        #                 'packetRateIn': [None for _ in range(100)],
-        #                 'packetRateOut': [None for _ in range(100)],
-        #                 'bytesIn': [None for _ in range(100)],
-        #                 'bytesOut': [None for _ in range(100)],
-        #                 'packetsIn': [None for _ in range(100)],
-        #                 'packetsOut': [None for _ in range(100)],
-        #                 'queuePackets': [None for _ in range(100)],
-        #                 'queueDropPackets': [None for _ in range(100)],
-        #                 'queueDropRate': [None for _ in range(100)],
-        #             }
-        #             } for id in self.ids
-        #         }
-        #     })
+            time.sleep(self.interval)  # Update every interval
 
     def restart(self):
         """Restart the monitor"""
