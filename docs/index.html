@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,148 +11,579 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            padding: 20px;
+            padding: 2rem;
+            background-color: #f8f9fa;
         }
+
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
         .card {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border: none;
         }
+
         .list-group-item.active {
             background-color: #0d6efd;
             border-color: #0d6efd;
         }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background-color: rgba(10, 10, 10, 0.9);
+            border-radius: 0.5rem;
+        }
+
+        .header img {
+            height: 100px;
+            margin-right: 1.5rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        /* Navigation styling */
+        .list-group {
+            margin-bottom: 2rem;
+        }
+
+        .list-group-item {
+            padding: 0.75rem 1rem;
+            border-left: none;
+            border-right: none;
+        }
+
+        .list-group-item:first-child {
+            border-top: none;
+        }
+
+        /* Content section styling */
+        h2 {
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        h3 {
+            margin-top: 2rem;
+            margin-bottom: 1.25rem;
+        }
+
+        h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Code block styling */
+        pre {
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            color: #d4d4d4;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #3d3d3d;
+        }
+
+        .copy-button.copied {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        pre code {
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Inline code styling */
+        code:not(pre code) {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Card grid spacing */
+        .row {
+            margin-bottom: 2rem;
+        }
+
+        .col-md-4,
+        .col-md-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Alert styling */
+        .alert {
+            margin: 1.5rem 0;
+            padding: 1rem 1.25rem;
+        }
+
+        /* Syntax highlighting colors */
+        .language-bash .comment {
+            color: #6a9955;
+        }
+
+        .language-bash .keyword {
+            color: #569cd6;
+        }
+
+        .language-bash .string {
+            color: #ce9178;
+        }
+
+        .language-bash .number {
+            color: #b5cea8;
+        }
+
+        .language-bash .function {
+            color: #dcdcaa;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                margin-bottom: 1.5rem;
+                padding: 1rem;
+            }
+
+            .header img {
+                height: 60px;
+            }
+
+            h2 {
+                margin-top: 1.5rem;
+            }
+
+            pre {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Help Documentation</h5>
+        <div class="header" style="padding: 0;">
+            <img src="./assets/images/logo-dark-trans.png" alt="NetHang Logo" style="height: 100px;">
+            <h1 style="display: none;">NetHang</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-5">
+                <!-- Navigation -->
+                <div class="list-group position-sticky top-0">
+                    <a href="#overview" class="list-group-item list-group-item-action"><i class="bi bi-tv"></i>
+                        Overview</a>
+                    <a href="#preparation" class="list-group-item list-group-item-action"><i class="bi bi-gear"></i>
+                        Preparation</a>
+                    <a href="#installation" class="list-group-item list-group-item-action"><i
+                            class="bi bi-download"></i> Installation</a>
+                    <a href="#simulation" class="list-group-item list-group-item-action" data-bs-toggle="collapse"
+                        data-bs-target="#simulationSubmenu" aria-expanded="true">
+                        <i class="bi bi-modem"></i> Simulation
+                        <i class="bi bi-chevron-down float-end"></i>
+                    </a>
+                    <div class="collapse show" id="simulationSubmenu">
+                        <div class="list-group list-group-flush">
+                            <a href="#paths" class="list-group-item list-group-item-action ps-4"
+                                style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
+                                    class="bi bi-arrow-left-right"></i> Paths</a>
+                            <a href="#simu-models" class="list-group-item list-group-item-action ps-4"
+                                style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
+                                    class="bi bi-boxes"></i> Simulation Models</a>
+                            <a href="#custom-simu-settings" class="list-group-item list-group-item-action ps-4"
+                                style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
+                                    class="bi bi-pencil-square"></i> Custom Simulation Settings</a>
+                            <a href="#monitoring" class="list-group-item list-group-item-action ps-4"
+                                style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
+                                    class="bi bi-speedometer"></i> Monitoring</a>
+                        </div>
+                    </div>
+                    <a href="#future-plans" class="list-group-item list-group-item-action"><i class="bi bi-calendar4-week"></i>
+                        Future Plans</a>
+                    <a href="#faq" class="list-group-item list-group-item-action"><i class="bi bi-question-circle"></i>
+                        FAQ</a>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <!-- Navigation -->
-                        <div class="list-group">
-                            <a href="#overview" class="list-group-item list-group-item-action">Overview</a>
-                            <a href="#paths" class="list-group-item list-group-item-action">Paths</a>
-                            <a href="#protocols" class="list-group-item list-group-item-action">Protocols</a>
-                            <a href="#simulation" class="list-group-item list-group-item-action">Simulation</a>
-                            <a href="#monitoring" class="list-group-item list-group-item-action">Monitoring</a>
+            <div class="col-md-9">
+                <!-- Content -->
+                <div id="overview" class="mb-5">
+                    <h2>Overview</h2>
+                    <p>NetHang is a network simulation tool that allows you to create and manage network paths between
+                        LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
+                        effects on traffic.</p>
+                    <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid">
+                </div>
+
+                <div id="preparation" class="mb-5">
+                    <h2>Preparation</h2>
+                    <p>In simple terms, NetHang needs to run on a Linux-based software router. If you already have such
+                        a software router device or are familiar with how to set up the environment, it will be very
+                        convenient.</p>
+                    <p>If not, please follow the instructions below step-by-step to build one. Depending on your
+                        hardware and network environment, you may encounter different issues, which we can discuss and
+                        troubleshoot on GitHub.</p>
+                    <h3>Hardware</h3>
+                    <p>A Ubuntu 22.04 LTS server (or desktop) with at least <b>TWO</b> network interface cards (NICs) is required.
+                    </p>
+                    <h3>Software</h3>
+                    <div class="accordion" id="softwareAccordion">
+                        <!-- Dependencies Section -->
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="dependenciesHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#dependenciesCollapse" aria-expanded="true"
+                                    aria-controls="dependenciesCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> Dependencies and Permissions</i>
+                                </button>
+                            </p>
+                            <div id="dependenciesCollapse" class="accordion-collapse collapse show"
+                                aria-labelledby="dependenciesHeader" data-bs-parent="#softwareAccordion">
+                                <div class="accordion-body">
+                                    <p>To install the required packages, run the following command:</p>
+                                    <pre><code class="language-bash">sudo apt update; sudo apt install iproute2 iptables libcap2-bin</code></pre>
+                                    <p>Check command paths:</p>
+                                    <pre><code class="language-bash">which tc; which iptables</code></pre>
+                                    <p>They are typically located in <code>/sbin/tc</code> and <code>/sbin/iptables</code> (or <code>/usr/sbin/tc</code> and <code>/usr/sbin/iptables</code>).</p>
+                                    <p>Grant the <code>CAP_NET_ADMIN</code> capability, which is required for tc and iptables:</p>
+                                    <pre><code class="language-bash">sudo setcap cap_net_admin+ep /usr/sbin/tc; sudo setcap cap_net_admin+ep /usr/sbin/xtables-nft-multi</code></pre>
+                                    <p>Verify the permissions:</p>
+                                    <pre><code class="language-bash">iptables -L</code></pre>
+                                    <pre><code class="language-bash">tc qdisc add dev lo root netem delay 1ms;tc qdisc del dev lo root</code></pre>
+                                    <p>If the output are without errors, the permissions are set correctly.</p>
+                                    <p>If not, you may need to reboot the machine.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IP Forwarding Section -->
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="ipForwardingHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#ipForwardingCollapse" aria-expanded="false"
+                                    aria-controls="ipForwardingCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> Enabling IP Forwarding</i>
+                                </button>
+                            </p>
+                            <div id="ipForwardingCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="ipForwardingHeader" data-bs-parent="#softwareAccordion">
+                                <div class="accordion-body">
+                                    <h5>Step 1: Check Current IP Forwarding Status</h5>
+                                    <p>Before proceeding, check whether IP forwarding is currently enabled on your
+                                        Ubuntu machine:</p>
+                                    <pre><code class="language-bash">cat /proc/sys/net/ipv4/ip_forward</code></pre>
+                                    <p>If the output is 0, IP forwarding is disabled. If it's 1, it's already enabled.
+                                    </p>
+
+                                    <h5>Step 2: Enable IP Forwarding</h5>
+                                    <p>To enable IP forwarding temporarily (valid until the next reboot), run:</p>
+                                    <pre><code class="language-bash">sudo sysctl -w net.ipv4.ip_forward=1</code></pre>
+                                    <p>To make the change permanent, edit the <code>/etc/sysctl.conf</code> file and
+                                        uncomment or add the line:</p>
+                                    <pre><code class="language-bash">net.ipv4.ip_forward=1</code></pre>
+                                    <p>Then, apply the changes:</p>
+                                    <pre><code class="language-bash">sudo sysctl -p /etc/sysctl.conf</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Network Interfaces Section -->
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="networkInterfacesHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#networkInterfacesCollapse" aria-expanded="false"
+                                    aria-controls="networkInterfacesCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> Configuring Network Interfaces</i>
+                                </button>
+                            </p>
+                            <div id="networkInterfacesCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="networkInterfacesHeader" data-bs-parent="#softwareAccordion">
+                                <div class="accordion-body">
+                                    <h5>Step 1: List Network Interfaces</h5>
+                                    <p>Identify your network interfaces using the ip command:</p>
+                                    <pre><code class="language-bash">ip addr</code></pre>
+                                    <p>You should see a list of interfaces like eth0, eth1, etc.</p>
+
+                                    <h5>Step 2: Configure Network Interfaces</h5>
+                                    <p>Edit the network configuration files for your interfaces. For example, to
+                                        configure eth0 and eth1, you'd edit <code>/etc/network/interfaces</code>:</p>
+                                    <pre><code class="language-bash">sudo vi /etc/network/interfaces</code></pre>
+                                    <p>Here's a sample configuration for eth0 and eth1:</p>
+                                    <pre><code class="language-bash"># eth0 - Internet-facing interface
+auto eth0
+iface eth0 inet dhcp
+
+# eth1 - Internal LAN interface
+auto eth1
+iface eth1 inet static
+    address 192.168.1.1
+    netmask 255.255.255.0</code></pre>
+
+                                    <h5>Step 3: Apply Network Configuration Changes</h5>
+                                    <p>Apply the changes to network interfaces:</p>
+                                    <pre><code class="language-bash">sudo systemctl restart networking</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NAT Section -->
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="natHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#natCollapse" aria-expanded="false" aria-controls="natCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> Configuring NAT (Network Address
+                                        Translation)</i>
+                                </button>
+                            </p>
+                            <div id="natCollapse" class="accordion-collapse collapse" aria-labelledby="natHeader"
+                                data-bs-parent="#softwareAccordion">
+                                <div class="accordion-body">
+                                    <p>To enable NAT for outbound traffic from your LAN, use iptables:</p>
+                                    <pre><code class="language-bash">sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</code></pre>
+                                    <p>Make the change permanent by installing iptables-persistent:</p>
+                                    <pre><code class="language-bash">sudo apt update
+sudo apt install iptables-persistent</code></pre>
+                                    <p>Follow the prompts to save the current rules.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DHCP Server Section -->
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="dhcpHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#dhcpCollapse" aria-expanded="false" aria-controls="dhcpCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> (Optional) Setting Up DHCP Server</i>
+                                </button>
+                            </p>
+                            <div id="dhcpCollapse" class="accordion-collapse collapse" aria-labelledby="dhcpHeader"
+                                data-bs-parent="#softwareAccordion">
+                                <div class="accordion-body">
+                                    <p>This step is optional. If you want to use DHCP to assign IP addresses to devices
+                                        on the LAN, you can configure the DHCP server.</p>
+
+                                    <h5>Step 1: Install DHCP Server</h5>
+                                    <p>If you want your Ubuntu router to assign IP addresses to devices on the LAN,
+                                        install the DHCP server software:</p>
+                                    <pre><code class="language-bash">sudo apt update
+sudo apt install isc-dhcp-server</code></pre>
+
+                                    <h5>Step 2: Configure DHCP Server</h5>
+                                    <p>Edit the DHCP server configuration file:</p>
+                                    <pre><code class="language-bash">sudo vi /etc/dhcp/dhcpd.conf</code></pre>
+                                    <p>Here's a sample configuration:</p>
+                                    <pre><code class="language-bash">subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.10 192.168.1.50;
+  option routers 192.168.1.1;
+  option domain-name-servers 8.8.8.8, 8.8.4.4;
+}</code></pre>
+
+                                    <h5>Step 3: Start DHCP Server</h5>
+                                    <p>Start the DHCP server:</p>
+                                    <pre><code class="language-bash">sudo systemctl start isc-dhcp-server</code></pre>
+
+                                    <h5>Step 4: Enable DHCP Server at Boot</h5>
+                                    <p>To ensure the DHCP server starts at boot:</p>
+                                    <pre><code class="language-bash">sudo systemctl enable isc-dhcp-server</code></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <!-- Content -->
-                        <div id="overview" class="mb-5">
-                            <h4>Overview</h4>
-                            <p>NetHang is a network simulation tool that allows you to create and manage network paths between LAN and WAN interfaces. It helps you simulate various network conditions and monitor their effects on traffic.</p>
-                        </div>
+                </div>
 
-                        <div id="paths" class="mb-5">
-                            <h4>Paths</h4>
-                            <p>A path represents a connection between your LAN and WAN interfaces. Each path can be configured with:</p>
-                            <ul>
-                                <li>Protocol (TCP, UDP, or IP)</li>
-                                <li>Source and destination IP addresses</li>
-                                <li>Port numbers (for TCP and UDP)</li>
-                                <li>Simulation settings</li>
-                            </ul>
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Note:</strong> For IP protocol paths, port numbers are not required.
-                            </div>
-                        </div>
+                <div id="installation" class="mb-5">
+                    <h2>Installation</h2>
+                    <p>NetHang is a network simulation tool that allows you to create and manage network paths between
+                        LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
+                        effects on traffic.</p>
+                </div>
 
-                        <div id="protocols" class="mb-5">
-                            <h4>Protocols</h4>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">TCP</h5>
-                                            <p class="card-text">Transmission Control Protocol - Provides reliable, ordered, and error-checked delivery of data.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">UDP</h5>
-                                            <p class="card-text">User Datagram Protocol - Provides fast but unreliable delivery of data.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">IP</h5>
-                                            <p class="card-text">Internet Protocol - Basic network layer protocol without port numbers.</p>
-                                        </div>
-                                    </div>
+                <div id="simulation" class="mb-5">
+                    <h2>Simulation</h2>
+                    <p>You can simulate network conditions in two ways:</p>
+                    <div class="row">
+                        <div class="col-md-6 d-flex align-items-stretch">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Models</h5>
+                                    <p class="card-text">Pre-configured network models that simulate common network
+                                        conditions.</p>
                                 </div>
                             </div>
                         </div>
-
-                        <div id="simulation" class="mb-5">
-                            <h4>Simulation</h4>
-                            <p>You can simulate network conditions in two ways:</p>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Models</h5>
-                                            <p class="card-text">Pre-configured network models that simulate common network conditions.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Custom Settings</h5>
-                                            <p class="card-text">Configure specific network parameters:</p>
-                                            <ul>
-                                                <li>Bandwidth (Kbps)</li>
-                                                <li>Queue Depth (Packets)</li>
-                                                <li>Delay (ms)</li>
-                                                <li>Packet Loss (%)</li>
-                                                <li>Jitter (ms)</li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Custom Settings</h5>
+                                    <p class="card-text">Configure specific network parameters:</p>
+                                    <ul>
+                                        <li>Bandwidth (Kbps)</li>
+                                        <li>Queue Depth (Packets)</li>
+                                        <li>Delay (ms)</li>
+                                        <li>Packet Loss (%)</li>
+                                        <li>Jitter (ms)</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div id="monitoring" class="mb-5">
-                            <h4>Monitoring</h4>
-                            <p>The application provides real-time monitoring of network conditions through three charts:</p>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Throughput</h5>
-                                            <p class="card-text">Shows the bit rate for both uplink and downlink traffic.</p>
-                                        </div>
+                    <div id="paths" class="mb-5">
+                        <h3>Paths</h3>
+                        <p>A path represents a connection between your LAN and WAN interfaces. Each path can be
+                            configured
+                            with:</p>
+                        <ul>
+                            <li>Protocol (TCP, UDP, or IP)</li>
+                            <li>Source and destination IP addresses</li>
+                            <li>Port numbers (for TCP and UDP)</li>
+                            <li>Simulation settings</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong> For IP protocol paths, port numbers are not required.
+                        </div>
+                    </div>
+
+                    <div id="protocols" class="mb-5">
+                        <h3>Protocols</h3>
+                        <div class="row">
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">TCP</h5>
+                                        <p class="card-text">Transmission Control Protocol - Provides reliable, ordered,
+                                            and
+                                            error-checked delivery of data.</p>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Queuing</h5>
-                                            <p class="card-text">Displays the number of packets in the queue.</p>
-                                        </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">UDP</h5>
+                                        <p class="card-text">User Datagram Protocol - Provides fast but unreliable
+                                            delivery
+                                            of data.</p>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Loss</h5>
-                                            <p class="card-text">Shows the packet loss rate over time.</p>
-                                        </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">IP</h5>
+                                        <p class="card-text">Internet Protocol - Basic network layer protocol without
+                                            port
+                                            numbers.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <div id="simu-models" class="mb-5">
+                        <h3>Models</h3>
+                        <p>Models are pre-configured network paths that simulate common network conditions.</p>
+                    </div>
+
+                    <div id="custom-simu-settings" class="mb-5">
+                        <h3>Custom Simulation Settings</h3>
+                    </div>
+
+                    <div id="monitoring" class="mb-5">
+                        <h3>Monitoring</h3>
+                        <p>The application provides real-time monitoring of network conditions through three charts:</p>
+                        <div class="row">
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Throughput</h5>
+                                        <p class="card-text">Shows the bit rate for both uplink and downlink traffic.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Queuing</h5>
+                                        <p class="card-text">Displays the number of packets in the queue.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Loss</h5>
+                                        <p class="card-text">Shows the packet loss rate over time.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="future-plans" class="mb-5">
+                    <h2>Future Plans</h2>
+                    <p>The following features are planned for future releases:</p>
+                    <ul>
+                        <li>More models</li>
+                        <li>Recording statistics</li>
+                        <li>More custom settings</li>
+                        <ul>
+                            <li>Frame overhead size</li>
+                            <li>Jitter distribution</li>
+                            <li>Packet loss distribution</li>
+                            <li>Rate limit burst size & ceil rate</li>
+                        </ul>
+                    </ul>
+                </div>
+
+                <div id="faq" class="mb-5">
+                    <h2>FAQ</h2>
+                    <p>The application provides real-time monitoring of network conditions through three charts:</p>
                 </div>
             </div>
         </div>
@@ -169,6 +601,34 @@
                 });
             });
         });
+
+        // Add copy buttons to all code blocks
+        document.querySelectorAll('pre code').forEach((block) => {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.textContent = 'Copy';
+
+            const pre = block.parentElement;
+            pre.style.position = 'relative';
+            pre.appendChild(button);
+
+            button.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(block.textContent);
+                    button.textContent = 'Copied!';
+                    button.classList.add('copied');
+
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                        button.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    button.textContent = 'Failed to copy';
+                }
+            });
+        });
     </script>
 </body>
+
 </html>
