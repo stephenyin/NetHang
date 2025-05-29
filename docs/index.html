@@ -233,15 +233,16 @@
                             <a href="#simu-models" class="list-group-item list-group-item-action ps-4"
                                 style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
                                     class="bi bi-boxes"></i> Simulation Models</a>
-                            <a href="#custom-simu-settings" class="list-group-item list-group-item-action ps-4"
+                            <a href="#custom-settings" class="list-group-item list-group-item-action ps-4"
                                 style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
-                                    class="bi bi-pencil-square"></i> Custom Simulation Settings</a>
+                                    class="bi bi-pencil-square"></i> Custom Settings</a>
                             <a href="#monitoring" class="list-group-item list-group-item-action ps-4"
                                 style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
                                     class="bi bi-speedometer"></i> Monitoring</a>
                         </div>
                     </div>
-                    <a href="#future-plans" class="list-group-item list-group-item-action"><i class="bi bi-calendar4-week"></i>
+                    <a href="#future-plans" class="list-group-item list-group-item-action"><i
+                            class="bi bi-calendar4-week"></i>
                         Future Plans</a>
                     <a href="#faq" class="list-group-item list-group-item-action"><i class="bi bi-question-circle"></i>
                         FAQ</a>
@@ -254,26 +255,39 @@
                     <p>NetHang is a network simulation tool that allows you to create and manage network paths between
                         LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
                         effects on traffic.</p>
+                        <figure class="text-center">
+                            <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid"
+                            style="max-width: 80%;">
+                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Overview
+                            </figcaption>
+                        </figure>
+                    <p>How NetHang looks like:</p>
                     <figure class="text-center">
-                        <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid" style="max-width: 80%;">
-                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Overview</figcaption>
+                        <img src="./assets/images/overview.gif" alt="NetHang Overview" class="img-fluid"
+                            style="max-width: 80%;">
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">How NetHang looks like
+                        </figcaption>
                     </figure>
                 </div>
 
                 <div id="preparation" class="mb-5">
                     <h2>Preparation</h2>
-                    <p>In simple terms, NetHang needs to run on a <b>Linux-based software router</b>. If you already have such
+                    <p>In simple terms, NetHang needs to run on a <b>Linux-based software router</b>. If you already
+                        have such
                         a software router device or are familiar with how to set up the environment, it will be very
                         convenient.</p>
-                        <p>If not, please follow the instructions below step-by-step to build one. Depending on your
-                            hardware and network environment, you may encounter different issues, which we can discuss and
-                            troubleshoot on GitHub.</p>
-                            <h3>Hardware</h3>
-                            <p>A Ubuntu 22.04 LTS server (or desktop) with at least <b>TWO</b> network interface cards (NICs) is required. </p>
-                            <figure class="text-center">
-                                <img src="./assets/images/hardware.png" alt="NetHang Hardware" class="img-fluid" style="max-width: 80%;">
-                                <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Recommended hardware architecture</figcaption>
-                            </figure>
+                    <p>If not, please follow the instructions below step-by-step to build one. Depending on your
+                        hardware and network environment, you may encounter different issues, which we can discuss and
+                        troubleshoot on GitHub.</p>
+                    <h3>Hardware</h3>
+                    <p>A Ubuntu 22.04 LTS server (or desktop) with at least <b>TWO</b> network interface cards (NICs) is
+                        required. </p>
+                    <figure class="text-center">
+                        <img src="./assets/images/hardware.png" alt="NetHang Hardware" class="img-fluid"
+                            style="max-width: 80%;">
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Recommended hardware
+                            architecture</figcaption>
+                    </figure>
                     <h3>Software</h3>
                     <div class="accordion" id="softwareAccordion">
                         <!-- Dependencies Section -->
@@ -292,8 +306,11 @@
                                     <pre><code class="language-bash">sudo apt update; sudo apt install iproute2 iptables libcap2-bin</code></pre>
                                     <p>Check command paths:</p>
                                     <pre><code class="language-bash">which tc; which iptables</code></pre>
-                                    <p>They are typically located in <code>/sbin/tc</code> and <code>/sbin/iptables</code> (or <code>/usr/sbin/tc</code> and <code>/usr/sbin/iptables</code>).</p>
-                                    <p>Grant the <code>CAP_NET_ADMIN</code> capability, which is required for tc and iptables:</p>
+                                    <p>They are typically located in <code>/sbin/tc</code> and
+                                        <code>/sbin/iptables</code> (or <code>/usr/sbin/tc</code> and
+                                        <code>/usr/sbin/iptables</code>).</p>
+                                    <p>Grant the <code>CAP_NET_ADMIN</code> capability, which is required for tc and
+                                        iptables:</p>
                                     <pre><code class="language-bash">sudo setcap cap_net_admin+ep /usr/sbin/tc; sudo setcap cap_net_admin+ep /usr/sbin/xtables-nft-multi</code></pre>
                                     <p>Verify the permissions:</p>
                                     <pre><code class="language-bash">iptables -L</code></pre>
@@ -449,8 +466,10 @@ sudo apt install isc-dhcp-server</code></pre>
                 <div id="simulation" class="mb-5">
                     <h2>Simulation</h2>
                     <figure class="text-center">
-                        <img src="./assets/images/simulation.png" alt="NetHang Simulation" class="img-fluid" style="max-width: 80%;">
-                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Simulation</figcaption>
+                        <img src="./assets/images/simulation.png" alt="NetHang Simulation" class="img-fluid"
+                            style="max-width: 80%;">
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Simulation
+                        </figcaption>
                     </figure>
                     <div class="row">
                         <div class="col-md-6 d-flex align-items-stretch">
@@ -480,65 +499,64 @@ sudo apt install isc-dhcp-server</code></pre>
                     </div>
 
                     <div id="paths" class="mb-5">
-                        <h3>Paths</h3>
-                        <p>A path represents a connection between your LAN and WAN interfaces. Each path can be
+                        <h3>Path</h3>
+                        <p>A path represents a connection between your User-Equipment (UE) and the Application Services.
+                            Each path can be
                             configured
                             with:</p>
-                        <ul>
-                            <li>Protocol (TCP, UDP, or IP)</li>
-                            <li>Source and destination IP addresses</li>
-                            <li>Port numbers (for TCP and UDP)</li>
-                            <li>Simulation settings</li>
-                        </ul>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Note:</strong> For IP protocol paths, port numbers are not required.
-                        </div>
-                    </div>
-
-                    <div id="protocols" class="mb-5">
-                        <h3>Protocols</h3>
                         <div class="row">
-                            <div class="col-md-4 d-flex align-items-stretch">
+                            <div class="col-md-4 align-items-stretch">
                                 <div class="card mb-3">
                                     <div class="card-body">
-                                        <h5 class="card-title">TCP</h5>
-                                        <p class="card-text">Transmission Control Protocol - Provides reliable, ordered,
-                                            and
-                                            error-checked delivery of data.</p>
+                                        <h5 class="card-title">Protocol</h5>
+                                        <p class="card-text">TCP, UDP, or IP</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 d-flex align-items-stretch">
+                            <div class="col-md-4 align-items-stretch">
                                 <div class="card mb-3">
                                     <div class="card-body">
-                                        <h5 class="card-title">UDP</h5>
-                                        <p class="card-text">User Datagram Protocol - Provides fast but unreliable
-                                            delivery
-                                            of data.</p>
+                                        <h5 class="card-title">IP Address</h5>
+                                        <p class="card-text">Source and destination IP addresses</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 d-flex align-items-stretch">
+                            <div class="col-md-4 align-items-stretch">
                                 <div class="card mb-3">
                                     <div class="card-body">
-                                        <h5 class="card-title">IP</h5>
-                                        <p class="card-text">Internet Protocol - Basic network layer protocol without
-                                            port
-                                            numbers.</p>
+                                        <h5 class="card-title">Port</h5>
+                                        <p class="card-text">Port numbers (for TCP and UDP)</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <figure class="text-center">
+                            <img src="./assets/images/add-new-path.png" alt="Add New Path" class="img-fluid"
+                                style="max-width: 80%; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Add New Path
+                            </figcaption>
+                        </figure>
                     </div>
 
                     <div id="simu-models" class="mb-5">
                         <h3>Models</h3>
                         <p>Models are pre-configured network paths that simulate common network conditions.</p>
+                        <figure class="text-center">
+                            <img src="./assets/images/models.png" alt="Models" class="img-fluid"
+                                style="max-width: 80%; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Models</figcaption>
+                        </figure>
                     </div>
 
-                    <div id="custom-simu-settings" class="mb-5">
-                        <h3>Custom Simulation Settings</h3>
+                    <div id="custom-settings" class="mb-5">
+                        <h3>Custom Settings</h3>
+                        <p>You can customize the network settings for each path.</p>
+                        <figure class="text-center">
+                            <img src="./assets/images/custom-settings.png" alt="Custom Settings" class="img-fluid"
+                                style="max-width: 80%; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Custom Settings
+                            </figcaption>
+                        </figure>
                     </div>
 
                     <div id="monitoring" class="mb-5">
@@ -571,6 +589,12 @@ sudo apt install isc-dhcp-server</code></pre>
                                 </div>
                             </div>
                         </div>
+                        <figure class="text-center">
+                            <img src="./assets/images/traffic-charts.gif" alt="Monitoring" class="img-fluid"
+                                style="max-width: 80%; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Monitoring
+                            </figcaption>
+                        </figure>
                     </div>
                 </div>
 
