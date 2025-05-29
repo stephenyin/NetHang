@@ -216,7 +216,7 @@
                 <div class="list-group position-sticky top-0">
                     <a href="#overview" class="list-group-item list-group-item-action"><i class="bi bi-tv"></i>
                         Overview</a>
-                    <a href="#preparation" class="list-group-item list-group-item-action"><i class="bi bi-gear"></i>
+                    <a href="#preparation" class="list-group-item list-group-item-action"><i class="bi bi-tools"></i>
                         Preparation</a>
                     <a href="#installation" class="list-group-item list-group-item-action"><i
                             class="bi bi-download"></i> Installation</a>
@@ -254,20 +254,26 @@
                     <p>NetHang is a network simulation tool that allows you to create and manage network paths between
                         LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
                         effects on traffic.</p>
-                    <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid">
+                    <figure class="text-center">
+                        <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid" style="max-width: 80%;">
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Overview</figcaption>
+                    </figure>
                 </div>
 
                 <div id="preparation" class="mb-5">
                     <h2>Preparation</h2>
-                    <p>In simple terms, NetHang needs to run on a Linux-based software router. If you already have such
+                    <p>In simple terms, NetHang needs to run on a <b>Linux-based software router</b>. If you already have such
                         a software router device or are familiar with how to set up the environment, it will be very
                         convenient.</p>
-                    <p>If not, please follow the instructions below step-by-step to build one. Depending on your
-                        hardware and network environment, you may encounter different issues, which we can discuss and
-                        troubleshoot on GitHub.</p>
-                    <h3>Hardware</h3>
-                    <p>A Ubuntu 22.04 LTS server (or desktop) with at least <b>TWO</b> network interface cards (NICs) is required.
-                    </p>
+                        <p>If not, please follow the instructions below step-by-step to build one. Depending on your
+                            hardware and network environment, you may encounter different issues, which we can discuss and
+                            troubleshoot on GitHub.</p>
+                            <h3>Hardware</h3>
+                            <p>A Ubuntu 22.04 LTS server (or desktop) with at least <b>TWO</b> network interface cards (NICs) is required. </p>
+                            <figure class="text-center">
+                                <img src="./assets/images/hardware.png" alt="NetHang Hardware" class="img-fluid" style="max-width: 80%;">
+                                <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">Recommended hardware architecture</figcaption>
+                            </figure>
                     <h3>Software</h3>
                     <div class="accordion" id="softwareAccordion">
                         <!-- Dependencies Section -->
@@ -442,7 +448,10 @@ sudo apt install isc-dhcp-server</code></pre>
 
                 <div id="simulation" class="mb-5">
                     <h2>Simulation</h2>
-                    <p>You can simulate network conditions in two ways:</p>
+                    <figure class="text-center">
+                        <img src="./assets/images/simulation.png" alt="NetHang Simulation" class="img-fluid" style="max-width: 80%;">
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Simulation</figcaption>
+                    </figure>
                     <div class="row">
                         <div class="col-md-6 d-flex align-items-stretch">
                             <div class="card mb-3">
@@ -570,8 +579,9 @@ sudo apt install isc-dhcp-server</code></pre>
                     <p>The following features are planned for future releases:</p>
                     <ul>
                         <li>More models</li>
+                        <li>More platform support (OpenWRT, etc.)</li>
                         <li>Recording statistics</li>
-                        <li>More custom settings</li>
+                        <li>More custom settings:</li>
                         <ul>
                             <li>Frame overhead size</li>
                             <li>Jitter distribution</li>
