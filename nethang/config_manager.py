@@ -1,4 +1,12 @@
-# nethang/config_manager.py
+"""
+nethang/config_manager.py
+
+This module provides a mechanism for managing the configuration of the application.
+
+Author: Hang Yin
+Date: 2025-06-11
+"""
+
 import os
 import yaml
 import requests

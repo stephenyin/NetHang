@@ -23,6 +23,7 @@ from nethang.simu_path import SimuPathManager
 from nethang.id_manager import IDManager
 from nethang.extensions import socketio
 from nethang.config_manager import ConfigManager
+from nethang.version import __version__
 
 app.config['SECRET_KEY'] = os.urandom(24)
 socketio.init_app(app)
@@ -338,9 +339,7 @@ def get_models_version():
 @app.route('/about')
 @login_required
 def about():
-    version = get_version()
-    models_version = get_models_version()
-    return render_template('about.html', version=version, models_version=models_version)
+    return render_template('about.html', version=__version__, models_version=get_models_version())
 
 @app.route('/api/settings', methods=['GET', 'POST'])
 def settings_api():
