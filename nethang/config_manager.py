@@ -1,0 +1,526 @@
+# nethang/config_manager.py
+import os
+import yaml
+import requests
+from pathlib import Path
+import time
+from . import app, CONFIG_PATH, CONFIG_FILE, MODELS_FILE, PATHS_FILE
+
+class ConfigManager:
+    def __init__(self):
+        # GitHub config URL
+        self.github_config_url = "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models.yaml"
+
+        # Fallback config (if network fails)
+        self.fallback_models = """# Nethang Fallback models
+version: 0.1.0
+
+components:
+  delay_components:
+    delay_lan: &delay_lan
+      delay: 2
+    delay_intercity: &delay_intercity
+      delay: 15
+    delay_intercontinental: &delay_intercontinental
+      delay: 150
+    delay_DSL: &delay_DSL
+      delay: 5
+    delay_cellular_LTE_uplink: &delay_cellular_LTE_uplink
+      delay: 65
+    delay_cellular_LTE_downlink: &delay_cellular_LTE_downlink
+      delay: 50
+    delay_cellular_3G: &delay_cellular_3G
+      delay: 100
+    delay_cellular_EDGE_uplink: &delay_cellular_EDGE_uplink
+      delay: 440
+    delay_cellular_EDGE_downlink: &delay_cellular_EDGE_downlink
+      delay: 400
+    delay_very_bad_network: &delay_very_bad_network
+      delay: 500
+    delay_starlink_low_latency: &delay_starlink_low_latency
+      delay: 60
+    delay_starlink_moderate_latency: &delay_starlink_moderate_latency
+      delay: 100
+    delay_starlink_high_latency: &delay_starlink_high_latency
+      delay: 180
+
+  jitter_components:
+    jitter_moderate_wireless: &jitter_moderate_wireless
+      slot:
+        - 100
+        - 100
+    jitter_bad_wireless: &jitter_bad_wireless
+      slot:
+        - 300
+        - 300
+    jitter_moderate_congestion: &jitter_moderate_congestion
+      slot:
+        - 1500
+        - 2000
+    jitter_severe_congestion: &jitter_severe_congestion
+      slot:
+        - 3000
+        - 4000
+    jitter_starlink_handover: &jitter_starlink_handover
+      slot:
+        - 300
+        - 300
+    jitter_wireless_handover: &jitter_wireless_handover
+      slot:
+        - 500
+        - 500
+    jitter_wireless_low_snr: &jitter_wireless_low_snr
+      slot:
+        - 50
+        - 50
+
+  loss_components:
+    loss_slight: &loss_slight
+      loss: 1
+    loss_low: &loss_low
+      loss: 5
+    loss_moderate: &loss_moderate
+      loss: 10
+    loss_high: &loss_high
+      loss: 20
+    loss_severe: &loss_severe
+      loss: 30
+    loss_wireless_low_snr: &loss_wireless_low_snr
+      loss: 10
+    loss_very_bad_network: &loss_very_bad_network
+      loss: 10
+
+  rate_components:
+    rate_1000M: &rate_1000M
+      rate_limit: 1000000
+      qdepth: 1000
+    rate_1M_qdepth_1: &rate_1M_qdepth_1
+      rate_limit: 1000
+      qdepth: 1
+    rate_1M_nlc: &rate_1M_nlc
+      rate_limit: 1000
+      qdepth: 20
+    rate_1M_qdepth_150: &rate_1M_qdepth_150
+      rate_limit: 1000
+      qdepth: 150
+    rate_2M_qdepth_150: &rate_2M_qdepth_150
+      rate_limit: 2000
+      qdepth: 150
+    rate_100M_qdepth_1000: &rate_100M_qdepth_1000
+      rate_limit: 100000
+      qdepth: 1000
+    rate_DSL_uplink: &rate_DSL_uplink
+      rate_limit: 256
+      qdepth: 20
+    rate_DSL_downlink: &rate_DSL_downlink
+      rate_limit: 2000
+      qdepth: 20
+    rate_cellular_EDGE_uplink: &rate_cellular_EDGE_uplink
+      rate_limit: 200
+      qdepth: 20
+    rate_cellular_EDGE_downlink: &rate_cellular_EDGE_downlink
+      rate_limit: 240
+      qdepth: 20
+    rate_cellular_LTE_uplink: &rate_cellular_LTE_uplink
+      rate_limit: 10000
+      qdepth: 150
+    rate_cellular_LTE_downlink: &rate_cellular_LTE_downlink
+      rate_limit: 50000
+      qdepth: 20
+    rate_cellular_3G_uplink: &rate_cellular_3G_uplink
+      rate_limit: 330
+      qdepth: 20
+    rate_cellular_3G_downlink: &rate_cellular_3G_downlink
+      rate_limit: 780
+      qdepth: 20
+    rate_cellular_3G: &rate_cellular_3G
+      rate_limit: 2000
+      qdepth: 1000
+    rate_wifi_uplink: &rate_wifi_uplink
+      rate_limit: 33000
+      qdepth: 20
+    rate_wifi_downlink: &rate_wifi_downlink
+      rate_limit: 40000
+      qdepth: 20
+    rate_starlink_uplink: &rate_starlink_uplink
+      rate_limit: 15000
+      qdepth: 100
+    rate_starlink_downlink: &rate_starlink_downlink
+      rate_limit: 50000
+      qdepth: 100
+    accu_rate_10_qdepth_10: &accu_rate_10_qdepth_10
+      rate_limit: 10
+      qdepth: 10
+    accu_rate_10_qdepth_100: &accu_rate_10_qdepth_100
+      rate_limit: 10
+      qdepth: 100
+    accu_rate_10_qdepth_1000: &accu_rate_10_qdepth_1000
+      rate_limit: 10
+      qdepth: 1000
+    accu_rate_10_qdepth_10000: &accu_rate_10_qdepth_10000
+      rate_limit: 10
+      qdepth: 10000
+
+models:
+  (Scenario) Elevator:
+    description: "In a running elevator"
+    global:
+      uplink:
+        <<: [*rate_cellular_LTE_uplink, *delay_cellular_LTE_uplink]
+      downlink:
+        <<: [*rate_cellular_LTE_downlink, *delay_cellular_LTE_downlink]
+    timeline:
+      - duration: 10
+        uplink:
+        downlink:
+      - duration: 2
+        uplink:
+          <<: [*jitter_moderate_congestion, *loss_severe]
+        downlink:
+          <<: [*jitter_moderate_congestion, *loss_severe]
+      - duration: 5
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 2
+        uplink:
+          <<: [*jitter_moderate_congestion]
+        downlink:
+          <<: [*jitter_moderate_congestion]
+  (Scenario) High_speed_Driving:
+    description: "In a high speed driving situation"
+    global:
+      uplink:
+        <<: [*rate_cellular_LTE_uplink, *delay_cellular_LTE_uplink]
+      downlink:
+        <<: [*rate_cellular_LTE_downlink, *delay_cellular_LTE_downlink]
+    timeline:
+      - duration: 30
+        uplink:
+        downlink:
+      - duration: 2
+        uplink:
+          <<: [*jitter_moderate_congestion, *loss_severe, *delay_cellular_3G]
+        downlink:
+          <<: [*jitter_moderate_congestion, *loss_severe, *delay_cellular_3G]
+      - duration: 30
+        uplink:
+          <<: [*rate_cellular_3G_uplink, *delay_cellular_3G]
+        downlink:
+          <<: [*rate_cellular_3G_downlink, *delay_cellular_3G]
+      - duration: 2
+        uplink:
+          <<: [*jitter_moderate_congestion, *delay_cellular_EDGE_uplink]
+        downlink:
+          <<: [*jitter_moderate_congestion, *delay_cellular_EDGE_downlink]
+      - duration: 30
+        uplink:
+          <<: [*rate_cellular_EDGE_uplink, *delay_cellular_EDGE_uplink]
+        downlink:
+          <<: [*rate_cellular_EDGE_downlink, *delay_cellular_EDGE_downlink]
+      - duration: 2
+        uplink:
+          <<: [*jitter_moderate_congestion, *loss_severe, *delay_cellular_LTE_uplink]
+        downlink:
+          <<: [*jitter_moderate_congestion, *loss_severe, *delay_cellular_LTE_downlink]
+  (Scenario) Underground_parking_lot:
+    description: "In a underground parking lot"
+    global:
+      uplink:
+        <<: [*rate_cellular_LTE_uplink, *delay_cellular_LTE_uplink, *jitter_bad_wireless]
+      downlink:
+        <<: [*rate_cellular_LTE_downlink, *delay_cellular_LTE_downlink, *jitter_wireless_low_snr]
+    timeline:
+      - duration: 15
+        uplink:
+        downlink:
+      - duration: 2
+        uplink:
+          <<: [*accu_rate_10_qdepth_10000]
+        downlink:
+          <<: [*accu_rate_10_qdepth_10000]
+      - duration: 10
+        uplink:
+          <<: [*rate_cellular_3G_uplink, *delay_cellular_3G, *jitter_bad_wireless]
+        downlink:
+          <<: [*rate_cellular_3G_downlink, *delay_cellular_3G, *jitter_wireless_low_snr]
+      - duration: 1
+        uplink:
+          <<: [*accu_rate_10_qdepth_10000]
+        downlink:
+          <<: [*accu_rate_10_qdepth_10000]
+      - duration: 30
+        uplink:
+          <<: [*rate_cellular_3G_uplink, *delay_cellular_3G]
+        downlink:
+          <<: [*rate_cellular_3G_downlink, *delay_cellular_3G]
+      - duration: 2
+        uplink:
+          <<: [*accu_rate_10_qdepth_10]
+        downlink:
+          <<: [*accu_rate_10_qdepth_10]
+
+  EDGE_with_handover:
+    description: "Using cellular EDGE with handover between different cells"
+    global:
+      uplink:
+        <<: [*rate_cellular_EDGE_uplink, *delay_cellular_EDGE_uplink]
+      downlink:
+        <<: [*rate_cellular_EDGE_downlink, *delay_cellular_EDGE_downlink]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 2.5
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 2.5
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  3G_with_handover:
+    description: "Using cellular 3G with handover between different cells"
+    global:
+      uplink:
+        <<: [*rate_cellular_3G_uplink, *delay_cellular_3G]
+      downlink:
+        <<: [*rate_cellular_3G_downlink, *delay_cellular_3G]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 2
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 2
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  LTE_with_handover:
+    description: "Using cellular LTE with handover between different cells"
+    global:
+      uplink:
+        <<: [*rate_cellular_LTE_uplink, *delay_cellular_LTE_uplink]
+      downlink:
+        <<: [*rate_cellular_LTE_downlink, *delay_cellular_LTE_downlink]
+    timeline:
+      - duration: 60
+        uplink:
+        downlink:
+      - duration: 1
+        uplink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_handover, *loss_wireless_low_snr]
+      - duration: 60
+        uplink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+        downlink:
+          <<: [*jitter_wireless_low_snr, *loss_wireless_low_snr]
+      - duration: 1
+        uplink:
+          <<: [*jitter_wireless_handover]
+        downlink:
+          <<: [*jitter_wireless_handover]
+  Cellular_with_isp_throttle:
+    description: "Using cellular with ISP throttle"
+    global:
+      uplink:
+        <<: [*rate_1M_qdepth_150, *delay_intercity]
+      downlink:
+        <<: [*rate_1M_qdepth_1, *delay_intercity]
+    timeline:
+  Starlink:
+    description: "Using Starlink satellite internet"
+    global:
+      uplink:
+        <<: [*rate_starlink_uplink, *delay_starlink_low_latency]
+      downlink:
+        <<: [*rate_starlink_downlink, *delay_starlink_low_latency]
+    timeline:
+      - duration: 20
+        uplink:
+        downlink:
+      - duration: 0.8
+        uplink:
+          <<: [*jitter_starlink_handover, *loss_low]
+        downlink:
+          <<: [*jitter_starlink_handover, *loss_low]
+      - duration: 15
+        uplink:
+          <<: [*delay_starlink_high_latency]
+        downlink:
+          <<: [*delay_starlink_high_latency]
+      - duration: 0.8
+        uplink:
+          <<: [*jitter_starlink_handover, *loss_low]
+        downlink:
+          <<: [*jitter_starlink_handover, *loss_low]
+      - duration: 20
+        uplink:
+          <<: [*delay_starlink_moderate_latency]
+        downlink:
+          <<: [*delay_starlink_moderate_latency]
+      - duration: 0.8
+        uplink:
+          <<: [*jitter_starlink_handover, *loss_low]
+        downlink:
+          <<: [*jitter_starlink_handover, *loss_low]
+  (NLC) Very_bad_network:
+    description: "From Apple Network Link Conditioner"
+    global:
+      uplink:
+        <<: [*rate_1M_nlc, *delay_very_bad_network, *loss_very_bad_network]
+      downlink:
+        <<: [*rate_1M_nlc, *delay_very_bad_network, *loss_very_bad_network]
+    timeline:
+  (NLC) Wi-Fi:
+    description: "From Apple Network Link Conditioner"
+    global:
+      uplink:
+        <<: [*rate_wifi_uplink, *loss_slight]
+      downlink:
+        <<: [*rate_wifi_downlink, *loss_slight]
+    timeline:
+  (NLC) LTE:
+    description: "From Apple Network Link Conditioner"
+    global:
+      uplink:
+        <<: [*rate_cellular_LTE_uplink, *delay_cellular_LTE_uplink]
+      downlink:
+        <<: [*rate_cellular_LTE_downlink, *delay_cellular_LTE_downlink]
+    timeline:
+  (NLC) EDGE:
+    description: "From Apple Network Link Conditioner"
+    global:
+      uplink:
+        <<: [*rate_cellular_EDGE_uplink, *delay_cellular_EDGE_uplink]
+      downlink:
+        <<: [*rate_cellular_EDGE_downlink, *delay_cellular_EDGE_downlink]
+    timeline:
+  (NLC) DSL:
+    description: "From Apple Network Link Conditioner"
+    global:
+      uplink:
+        <<: [*rate_DSL_uplink, *delay_DSL]
+      downlink:
+        <<: [*rate_DSL_downlink, *delay_DSL]
+    timeline:
+"""
+
+    def ensure_models(self):
+        """Ensure config file exists"""
+        if not os.path.exists(MODELS_FILE):
+            self.create_config_from_github()
+        # else:
+            # Check if config file needs update (optional)
+            # self.check_config_update()
+
+        # return self.load_models()
+
+    def create_config_from_github(self):
+        """Download config file from GitHub"""
+        try:
+            os.makedirs(CONFIG_PATH, exist_ok=True)
+
+            app.logger.info("Downloading config file from GitHub...")
+
+            # Download config file
+            response = requests.get(self.github_config_url, timeout=10)
+            response.raise_for_status()
+
+            # Validate downloaded content is valid YAML
+            try:
+                yaml.safe_load(response.text)
+            except yaml.YAMLError as e:
+                raise ValueError(f"Downloaded config file is not valid YAML: {e}")
+
+            # Save config file
+            with open(MODELS_FILE, 'w', encoding='utf-8') as f:
+                f.write(response.text)
+
+            app.logger.info(f"Config file downloaded and saved to: {MODELS_FILE}")
+
+        except Exception as e:
+            app.logger.warning(f"Failed to download config file from GitHub: {e}")
+            app.logger.info("Using fallback config...")
+            self.create_fallback_config()
+
+    def create_fallback_config(self):
+        """Create fallback config file"""
+        try:
+            os.makedirs(CONFIG_PATH, exist_ok=True)
+
+            with open(MODELS_FILE, 'w', encoding='utf-8') as f:
+                f.write(self.fallback_models)
+
+            app.logger.info(f"Fallback config file created: {MODELS_FILE}")
+
+        except Exception as e:
+            app.logger.warning(f"Failed to create fallback config file: {e}")
+
+    def check_config_update(self, force_update=False):
+        """Check if config file needs update"""
+        try:
+            # Check file modification time (e.g. update every 7 days)
+            file_age = time.time() - os.path.getmtime(MODELS_FILE)
+            if file_age > 7 * 24 * 3600 or force_update:  # 7 days
+                app.logger.info("Checking config file update...")
+                self.update_config_from_github()
+        except Exception as e:
+            app.logger.warning(f"Failed to check config update: {e}")
+
+    def update_config_from_github(self):
+        """Update config file from GitHub"""
+        try:
+            response = requests.get(self.github_config_url, timeout=10)
+            response.raise_for_status()
+
+            # Backup existing config
+            backup_file = os.path.join(CONFIG_PATH, 'models.yaml.backup')
+            if os.path.exists(MODELS_FILE):
+                import shutil
+                shutil.copy2(MODELS_FILE, backup_file)
+
+            # Validate new config
+            new_config = yaml.safe_load(response.text)
+
+            # Save new config
+            with open(MODELS_FILE, 'w', encoding='utf-8') as f:
+                f.write(response.text)
+
+            app.logger.info("Config file updated")
+
+        except Exception as e:
+            app.logger.warning(f"Failed to update config file: {e}")
+            # If there is a backup, restore it
+            backup_file = os.path.join(CONFIG_PATH, 'models.yaml.backup')
+            if os.path.exists(backup_file):
+                import shutil
+                shutil.copy2(backup_file, MODELS_FILE)
+
+    def load_models(self):
+        """Load config file"""
+        try:
+            with open(MODELS_FILE, 'r', encoding='utf-8') as f:
+                return yaml.safe_load(f)
+        except Exception as e:
+            app.logger.warning(f"Failed to load config file: {e}")
+            return self.fallback_models

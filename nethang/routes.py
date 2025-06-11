@@ -22,9 +22,12 @@ from nethang.proc_lock import ProcLock
 from nethang.simu_path import SimuPathManager
 from nethang.id_manager import IDManager
 from nethang.extensions import socketio
+from nethang.config_manager import ConfigManager
 
 app.config['SECRET_KEY'] = os.urandom(24)
 socketio.init_app(app)
+
+ConfigManager().ensure_models()
 
 # Initialize SimuPathManager
 SimuPathManager()
