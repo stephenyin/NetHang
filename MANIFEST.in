@@ -6,6 +6,7 @@ include LICENSE
 include requirements.txt
 
 # Include Python package files
+include run.py
 recursive-include nethang *.py
 recursive-include nethang/static *
 recursive-include nethang/templates *

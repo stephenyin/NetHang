@@ -49,7 +49,7 @@ class SimuSettings:
         elif key == 'jitter':
             return 0
         else:
-            app.logger.warning(f"Not implemented key: {key}")
+            app.logger.info(f"Not implemented key: {key}")
 
     def __eq__(self, other):
         return (
