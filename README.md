@@ -94,6 +94,3 @@ NetHang Contributors
 
 - Thanks to all contributors who have helped with the project
 - Inspired by various network traffic control tools and utilities
-
-# APP ICON
-![App Icon](https://raw.githubusercontent.com/stephenyin/NetHang/e5f090958d180be880aaa0a6f1af644392fe1cf9/assets/icon-dark.png)
