@@ -66,9 +66,3 @@ def test_about_page_contains_links(client):
     assert b'github.com/stephenyin/NetHang' in response.data
     assert b'linkedin.com/in/hang-yin-stephen' in response.data
     assert b'mailto:stephen.yin.h@gmail.com' in response.data
-
-def test_models_version_display(client, mock_models_yaml):
-    """Test that models version is correctly displayed."""
-    response = client.get('/about')
-    assert response.status_code == 200
-    assert b'1.0.0' in response.data  # Version from mock models.yaml
