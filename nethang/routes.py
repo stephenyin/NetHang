@@ -64,6 +64,11 @@ def check_privileges():
 def before_request():
     """Check privileges before each request"""
     g.privileges = check_privileges()
+    config = SimuPathManager().load_config()
+    if 'lan_interface' not in config or 'wan_interface' not in config or config['lan_interface'] == '' or config['wan_interface'] == '':
+        g.no_interface = True
+    else:
+        g.no_interface = False
 
 def hash_password(password):
     """Hash a password using MD5"""

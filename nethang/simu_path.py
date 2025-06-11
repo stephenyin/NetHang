@@ -487,16 +487,27 @@ class SimuPathManager:
     def load_config(self):
         """Load configuration from config.yaml"""
         if os.path.exists(CONFIG_FILE):
+            config = {}
             with open(CONFIG_FILE, 'r') as f:
                 config = yaml.safe_load(f)
-                SimuPathManager.lan_ifname = config.get('lan_interface', '')
-                SimuPathManager.wan_ifname = config.get('wan_interface', '')
-
-            return config
-        return {
-            'lan_interface': '',
-            'wan_interface': '',
-        }
+                if config:
+                    SimuPathManager.lan_ifname = config.get('lan_interface', '') if 'lan_interface' in config else ''
+                    SimuPathManager.wan_ifname = config.get('wan_interface', '') if 'wan_interface' in config else ''
+                    return config
+                else:
+                    SimuPathManager.lan_ifname = ''
+                    SimuPathManager.wan_ifname = ''
+                    return {
+                        'lan_interface': '',
+                        'wan_interface': '',
+                    }
+        else:
+            SimuPathManager.lan_ifname = ''
+            SimuPathManager.wan_ifname = ''
+            return {
+                'lan_interface': '',
+                'wan_interface': '',
+            }
 
     def save_config(self, config):
         """Save configuration to config.yaml"""

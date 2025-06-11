@@ -53,6 +53,13 @@
         </div>
     </div>
     {% endif %}
+    {% if g.no_interface %}
+    <div class="alert alert-warning alert-dismissible fade show mb-0" role="alert">
+        <div class="container">
+            <strong>Warning:</strong> No interface(s) configured. Go to <a href="/config">Settings</a> to configure.
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
