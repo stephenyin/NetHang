@@ -38,6 +38,20 @@ Unlike traditional network impairment tools that target backbone network quality
 - Linux system with `tc` and `iptables` support
 - Root privileges for traffic control operations
 
+## Installation
+
+### From PyPI (Recommended)
+
+You can install NetHang from PyPI using the following command:
+
+```pip install nethang```
+
+### From Source (For Developers)
+
+You can also install NetHang from source by cloning the repository and running the following command:
+
+```pip install .```
+
 ## License
 
 MIT License
