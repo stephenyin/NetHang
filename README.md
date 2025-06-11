@@ -6,7 +6,7 @@
 
 NetHang is a web-based tool designed to simulate network quality, focusing on the diversity of last-mile network conditions. For modern internet applications and services with high real-time requirements, NetHang offers a stable, reentrant, customizable, and easily extensible network quality simulation system, helping to achieve low-latency and high-quality internet services.
 
-<img src="assets/nh-10.gif" alt="Add Path" width="1080"/>
+<img src="https://github.com/stephenyin/NetHang/blob/e5f090958d180be880aaa0a6f1af644392fe1cf9/assets/nh-10.gif" alt="Add Path" width="1080"/>
 
 Unlike traditional network impairment tools that target backbone network quality between servers and switches, NetHang is optimized for:
 
@@ -15,13 +15,13 @@ Unlike traditional network impairment tools that target backbone network quality
     - UE <--> Cellular <--> ISP edge nodes <--> APP servers
     - UE <--> Air interface <--> Satellite <--> APP servers
 
-<img src="assets/nh-01.gif" alt="Start Simulation" width="1080"/>
+<img src="https://github.com/stephenyin/NetHang/blob/e5f090958d180be880aaa0a6f1af644392fe1cf9/assets/nh-01.gif" alt="Start Simulation" width="1080"/>
 
 - The current network model is built and simplified based on existing network quality data modeling, while also supporting users to easily customize the network models they need for testing in YAML format.
 
 - NetHang clearly displays the differences in data traffic before and after simulation, as well as the state of the simulation conditions.
 
-<img src="assets/nh-00.gif" alt="Manipulate Charts" width="1080"/>
+<img src="https://github.com/stephenyin/NetHang/blob/e5f090958d180be880aaa0a6f1af644392fe1cf9/assets/nh-00.gif" alt="Manipulate Charts" width="1080"/>
 
 ## Features
 
