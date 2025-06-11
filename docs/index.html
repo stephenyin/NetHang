@@ -232,7 +232,7 @@
                                     class="bi bi-arrow-left-right"></i> Paths</a>
                             <a href="#simu-models" class="list-group-item list-group-item-action ps-4"
                                 style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
-                                    class="bi bi-boxes"></i> Simulation Models</a>
+                                    class="bi bi-boxes"></i> Models</a>
                             <a href="#custom-settings" class="list-group-item list-group-item-action ps-4"
                                 style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
                                     class="bi bi-pencil-square"></i> Custom Settings</a>
@@ -458,9 +458,12 @@ sudo apt install isc-dhcp-server</code></pre>
 
                 <div id="installation" class="mb-5">
                     <h2>Installation</h2>
-                    <p>NetHang is a network simulation tool that allows you to create and manage network paths between
-                        LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
-                        effects on traffic.</p>
+                    <h3>From PyPI (Recommended)</h3>
+                    <p>You can install NetHang from PyPI using the following command:</p>
+                    <pre><code class="language-bash">pip install nethang</code></pre>
+                    <h3>From Source (For Developers)</h3>
+                    <p>You can also install NetHang from source by cloning the repository and running the following command:</p>
+                    <pre><code class="language-bash">pip install .</code></pre>
                 </div>
 
                 <div id="simulation" class="mb-5">
@@ -472,17 +475,23 @@ sudo apt install isc-dhcp-server</code></pre>
                         </figcaption>
                     </figure>
                     <div class="row">
-                        <div class="col-md-6 d-flex align-items-stretch">
-                            <div class="card mb-3">
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
                                 <div class="card-body">
                                     <h5 class="card-title">Models</h5>
                                     <p class="card-text">Pre-configured network models that simulate common network
                                         conditions.</p>
+                                    <ul>
+                                        <li><b>Network detection</b>: Assessing actual network quality by transmitting and receiving diverse protocol packets.</li>
+                                        <li><b>Third-party models</b>: Like Network-Link-Conditioner from Apple. etc.</li>
+                                        <li><b>Technical analysis</b>: Analyzing network traffic patterns and characteristics.</li>
+                                        <li><b>Custom models</b>: Create your own models by editing the configuration file.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6 align-items-stretch">
-                            <div class="card mb-3">
+                            <div class="card mb-3" style="height: 100%;">
                                 <div class="card-body">
                                     <h5 class="card-title">Custom Settings</h5>
                                     <p class="card-text">Configure specific network parameters:</p>
@@ -600,24 +609,58 @@ sudo apt install isc-dhcp-server</code></pre>
 
                 <div id="future-plans" class="mb-5">
                     <h2>Future Plans</h2>
-                    <p>The following features are planned for future releases:</p>
-                    <ul>
-                        <li>More models</li>
-                        <li>More platform support (OpenWRT, etc.)</li>
-                        <li>Recording statistics</li>
-                        <li>More custom settings:</li>
-                        <ul>
-                            <li>Frame overhead size</li>
-                            <li>Jitter distribution</li>
-                            <li>Packet loss distribution</li>
-                            <li>Rate limit burst size & ceil rate</li>
-                        </ul>
-                    </ul>
+                    <div class="row">
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Provide with more Models</h5>
+                                    <p class="card-text">More models to choose from.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Support more platforms</h5>
+                                    <p class="card-text">Debian, OpenWRT, etc.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Support recording statistics</h5>
+                                    <p class="card-text">Support recording statistics to a file or database.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Support more custom settings</h5>
+                                    <p class="card-text">Frame overhead size, Jitter distribution, Packet loss distribution, Rate limit burst size & ceil rate. etc.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="faq" class="mb-5">
                     <h2>FAQ</h2>
-                    <p>The application provides real-time monitoring of network conditions through three charts:</p>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <p class="accordion-header" id="faqHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse" aria-expanded="false" aria-controls="faqCollapse">
+                                    <i class="bi bi-arrow-right-circle-fill"> What is NetHang?</i>
+                                </button>
+                            </p>
+                            <div id="faqCollapse" class="accordion-collapse collapse" aria-labelledby="faqHeading" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>NetHang is a tool for simulating network conditions in a controlled environment. It allows you to test your network applications under various network conditions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
