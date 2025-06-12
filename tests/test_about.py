@@ -58,7 +58,7 @@ def test_about_page_loads(client):
     response = client.get('/about')
     assert response.status_code == 200
     assert b'About NetHang' in response.data
-    assert b'0.1.3' in response.data  # Current version from pyproject.toml
+    assert b'0.1.5' in response.data  # Current version from pyproject.toml
 
 def test_about_page_contains_links(client):
     """Test that about page contains all required links."""
