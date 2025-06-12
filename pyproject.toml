@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nethang"
-version = "0.1.5"
+version = "0.1.6"
 description = "A web-based tool for simulating network quality"
 readme = "README.md"
 authors = [
@@ -48,7 +48,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/stephenyin/NetHang"
+Homepage = "https://stephenyin.github.io/NetHang/"
 Repository = "https://github.com/stephenyin/NetHang.git"
 
 [tool.setuptools]
