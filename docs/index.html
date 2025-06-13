@@ -246,21 +246,26 @@
                         Future Plans</a>
                     <a href="#faq" class="list-group-item list-group-item-action"><i class="bi bi-question-circle"></i>
                         FAQ</a>
+                    <a href="#repository-author" class="list-group-item list-group-item-action"><i class="bi bi-github"></i>
+                        Repository and Author</a>
                 </div>
             </div>
             <div class="col-md-9">
                 <!-- Content -->
                 <div id="overview" class="mb-5">
                     <h2>Overview</h2>
-                    <p>NetHang is a network simulation tool that allows you to create and manage network paths between
-                        LAN and WAN interfaces. It helps you simulate various network conditions and monitor their
-                        effects on traffic.</p>
-                        <figure class="text-center">
-                            <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid"
+                    <p>NetHang is a web-based network quality simulation tool that allows you to create and manage
+                        network paths between LAN and WAN interfaces. Ideal for use
+                        with software routers on Linux platform. It focuses on simulating weak network (poor network)
+                        conditions, with built-in scenario models(Edge, 3G, 4G, Wi-Fi, Starlink, etc.) and combinations of
+                        parameters such as packet loss, delay, jitter, and bandwidth limitation, etc. It helps you
+                        simulate various network conditions and monitor their effects on traffic.</p>
+                    <figure class="text-center">
+                        <img src="./assets/images/overview.png" alt="NetHang Overview" class="img-fluid"
                             style="max-width: 80%;">
-                            <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Overview
-                            </figcaption>
-                        </figure>
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Overview
+                        </figcaption>
+                    </figure>
                     <p>How NetHang looks like:</p>
                     <figure class="text-center">
                         <img src="./assets/images/overview.gif" alt="NetHang Overview" class="img-fluid"
@@ -308,7 +313,8 @@
                                     <pre><code class="language-bash">which tc; which iptables</code></pre>
                                     <p>They are typically located in <code>/sbin/tc</code> and
                                         <code>/sbin/iptables</code> (or <code>/usr/sbin/tc</code> and
-                                        <code>/usr/sbin/iptables</code>).</p>
+                                        <code>/usr/sbin/iptables</code>).
+                                    </p>
                                     <p>Grant the <code>CAP_NET_ADMIN</code> capability, which is required for tc and
                                         iptables:</p>
                                     <pre><code class="language-bash">sudo setcap cap_net_admin+ep /usr/sbin/tc; sudo setcap cap_net_admin+ep /usr/sbin/xtables-nft-multi</code></pre>
@@ -462,7 +468,8 @@ sudo apt install isc-dhcp-server</code></pre>
                     <p>You can install NetHang from PyPI using the following command:</p>
                     <pre><code class="language-bash">pip install nethang</code></pre>
                     <h3>From Source (For Developers)</h3>
-                    <p>You can also install NetHang from source by cloning the repository and running the following command:</p>
+                    <p>You can also install NetHang from source by cloning the repository and running the following
+                        command:</p>
                     <pre><code class="language-bash">pip install .</code></pre>
                 </div>
 
@@ -482,10 +489,14 @@ sudo apt install isc-dhcp-server</code></pre>
                                     <p class="card-text">Pre-configured network models that simulate common network
                                         conditions.</p>
                                     <ul>
-                                        <li><b>Network detection</b>: Assessing actual network quality by transmitting and receiving diverse protocol packets.</li>
-                                        <li><b>Third-party models</b>: Like Network-Link-Conditioner from Apple. etc.</li>
-                                        <li><b>Technical analysis</b>: Analyzing network traffic patterns and characteristics.</li>
-                                        <li><b>Custom models</b>: Create your own models by editing the configuration file.</li>
+                                        <li><b>Network detection</b>: Assessing actual network quality by transmitting
+                                            and receiving diverse protocol packets.</li>
+                                        <li><b>Third-party models</b>: Like Network-Link-Conditioner from Apple. etc.
+                                        </li>
+                                        <li><b>Technical analysis</b>: Analyzing network traffic patterns and
+                                            characteristics.</li>
+                                        <li><b>Custom models</b>: Create your own models by editing the configuration
+                                            file.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -638,7 +649,8 @@ sudo apt install isc-dhcp-server</code></pre>
                             <div class="card mb-3" style="height: 100%;">
                                 <div class="card-body">
                                     <h5 class="card-title">Support more custom settings</h5>
-                                    <p class="card-text">Frame overhead size, Jitter distribution, Packet loss distribution, Rate limit burst size & ceil rate. etc.</p>
+                                    <p class="card-text">Frame overhead size, Jitter distribution, Packet loss
+                                        distribution, Rate limit burst size & ceil rate. etc.</p>
                                 </div>
                             </div>
                         </div>
@@ -650,13 +662,42 @@ sudo apt install isc-dhcp-server</code></pre>
                     <div class="accordion" id="faqAccordion">
                         <div class="accordion-item">
                             <p class="accordion-header" id="faqHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse" aria-expanded="false" aria-controls="faqCollapse">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faqCollapse" aria-expanded="false" aria-controls="faqCollapse">
                                     <i class="bi bi-arrow-right-circle-fill"> What is NetHang?</i>
                                 </button>
                             </p>
-                            <div id="faqCollapse" class="accordion-collapse collapse" aria-labelledby="faqHeading" data-bs-parent="#faqAccordion">
+                            <div id="faqCollapse" class="accordion-collapse collapse" aria-labelledby="faqHeading"
+                                data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    <p>NetHang is a tool for simulating network conditions in a controlled environment. It allows you to test your network applications under various network conditions.</p>
+                                    <p>NetHang is a tool for simulating network conditions in a controlled environment.
+                                        It allows you to test your network applications under various network
+                                        conditions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="repository-author" class="mb-5">
+                    <h2>Repository and Author</h2>
+                    <div class="row">
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-github"></i> Repository</h5>
+                                    <p class="card-text">NetHang is an open-source project hosted on GitHub. You can find the source code, report issues, and contribute to the project at:</p>
+                                    <p class="card-text"><a href="https://github.com/stephenyin/NetHang" target="_blank"><i class="bi bi-github"></i> NetHang on GitHub</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 align-items-stretch">
+                            <div class="card mb-3" style="height: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-person"></i> Author</h5>
+                                    <p class="card-text">NetHang is developed and maintained by Hang Yin.</p>
+                                    <p class="card-text"><a href="mailto:stephen.yin.h@gmail.com"><i class="bi bi-envelope"></i> Hang Yin</a></p>
+                                    <p class="card-text"><a href="https://www.linkedin.com/in/hang-yin-stephen/" target="_blank"><i class="bi bi-linkedin"></i> Hang Yin</a></p>
                                 </div>
                             </div>
                         </div>
