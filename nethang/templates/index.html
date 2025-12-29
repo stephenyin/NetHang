@@ -167,16 +167,12 @@
                                                         <td id="pathUplinkQueueDepth"></td>
                                                     </tr>
                                                     <tr>
-                                                        <th style="width: 30%;">Delay</th>
-                                                        <td id="pathUplinkDelay"></td>
+                                                        <th style="width: 30%;">Delay / Jitter</th>
+                                                        <td id="pathUplinkDelayJitter"></td>
                                                     </tr>
                                                     <tr>
                                                         <th style="width: 30%;">Loss</th>
                                                         <td id="pathUplinkLoss"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th style="width: 30%;">Jitter</th>
-                                                        <td id="pathUplinkJitter"></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -199,16 +195,12 @@
                                                         <td id="pathDownlinkQueueDepth"></td>
                                                     </tr>
                                                     <tr>
-                                                        <th style="width: 30%;">Delay</th>
-                                                        <td id="pathDownlinkDelay"></td>
+                                                        <th style="width: 30%;">Delay / Jitter</th>
+                                                        <td id="pathDownlinkDelayJitter"></td>
                                                     </tr>
                                                     <tr>
                                                         <th style="width: 30%;">Loss</th>
                                                         <td id="pathDownlinkLoss"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th style="width: 30%;">Jitter</th>
-                                                        <td id="pathDownlinkJitter"></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -1432,9 +1424,16 @@
                 const restrict = path.simu_settings.uplink.restrict_settings;
                 document.getElementById('pathUplinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
                 document.getElementById('pathUplinkQueueDepth').textContent = `${restrict.qdepth} packets`;
-                document.getElementById('pathUplinkDelay').textContent = `${restrict.delay} ms`;
-                document.getElementById('pathUplinkLoss').textContent = `${restrict.loss}%`;
-                document.getElementById('pathUplinkJitter').textContent = `${restrict.jitter} ms`;
+                // Combine Delay and Jitter in one row
+                if (restrict.latency_type === 'off') {
+                    document.getElementById('pathUplinkDelayJitter').textContent = 'Off';
+                } else {
+                    const delayText = `${restrict.delay} ms`;
+                    const jitterText = `${restrict.jitter} ms`;
+                    const typeText = restrict.latency_type ? ` (${restrict.latency_type})` : '';
+                    document.getElementById('pathUplinkDelayJitter').textContent = `Delay: ${delayText} / Jitter: ${jitterText}${typeText}`;
+                }
+                document.getElementById('pathUplinkLoss').textContent = restrict.loss_type === 'off' ? 'Off' : `${restrict.loss}% (${restrict.loss_type})`;
             } else {
                 uplinkRestrictionRow.style.display = 'none';
             }
@@ -1444,9 +1443,16 @@
                 const restrict = path.simu_settings.downlink.restrict_settings;
                 document.getElementById('pathDownlinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
                 document.getElementById('pathDownlinkQueueDepth').textContent = `${restrict.qdepth} packets`;
-                document.getElementById('pathDownlinkDelay').textContent = `${restrict.delay} ms`;
-                document.getElementById('pathDownlinkLoss').textContent = `${restrict.loss}%`;
-                document.getElementById('pathDownlinkJitter').textContent = `${restrict.jitter} ms`;
+                // Combine Delay and Jitter in one row
+                if (restrict.latency_type === 'off') {
+                    document.getElementById('pathDownlinkDelayJitter').textContent = 'Off';
+                } else {
+                    const delayText = `${restrict.delay} ms`;
+                    const jitterText = `${restrict.jitter} ms`;
+                    const typeText = restrict.latency_type ? ` (${restrict.latency_type})` : '';
+                    document.getElementById('pathDownlinkDelayJitter').textContent = `Delay: ${delayText} / Jitter: ${jitterText}${typeText}`;
+                }
+                document.getElementById('pathDownlinkLoss').textContent = restrict.loss_type === 'off' ? 'Off' : `${restrict.loss}% (${restrict.loss_type})`;
             } else {
                 downlinkRestrictionRow.style.display = 'none';
             }
@@ -1580,11 +1586,17 @@
                 // This prevents the change event handler from using default values
                 if (path.simu_settings.uplink.restrict_settings) {
                     const restrict = path.simu_settings.uplink.restrict_settings;
-                    const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                    // Read throttle_type directly, or calculate from rate_limit for backward compatibility
+                    let throttleType = restrict.throttle_type;
+                    if (!throttleType) {
+                        // Backward compatibility: calculate from rate_limit
+                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                        throttleType = isUnlimited ? 'off' : 'on';
+                    }
                     const rateType = document.getElementById('edit-uplink-rate-type');
-                    if (rateType) rateType.value = isUnlimited ? 'off' : 'on';
+                    if (rateType) rateType.value = throttleType;
                     const throttleInputs = document.getElementById('edit-uplink-throttle-inputs');
-                    if (throttleInputs) throttleInputs.style.display = isUnlimited ? 'none' : 'flex';
+                    if (throttleInputs) throttleInputs.style.display = throttleType === 'off' ? 'none' : 'flex';
                     const bandwidth = document.getElementById('edit-uplink-bandwidth');
                     if (bandwidth) bandwidth.value = restrict.rate_limit;
                     const burst = document.getElementById('edit-uplink-burst');
@@ -1656,11 +1668,17 @@
                 // This prevents the change event handler from using default values
                 if (path.simu_settings.downlink.restrict_settings) {
                     const restrict = path.simu_settings.downlink.restrict_settings;
-                    const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                    // Read throttle_type directly, or calculate from rate_limit for backward compatibility
+                    let throttleType = restrict.throttle_type;
+                    if (!throttleType) {
+                        // Backward compatibility: calculate from rate_limit
+                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                        throttleType = isUnlimited ? 'off' : 'on';
+                    }
                     const downlinkRateType = document.getElementById('edit-downlink-rate-type');
-                    if (downlinkRateType) downlinkRateType.value = isUnlimited ? 'off' : 'on';
+                    if (downlinkRateType) downlinkRateType.value = throttleType;
                     const downlinkThrottleInputs = document.getElementById('edit-downlink-throttle-inputs');
-                    if (downlinkThrottleInputs) downlinkThrottleInputs.style.display = isUnlimited ? 'none' : 'flex';
+                    if (downlinkThrottleInputs) downlinkThrottleInputs.style.display = throttleType === 'off' ? 'none' : 'flex';
                     const downlinkBandwidth = document.getElementById('edit-downlink-bandwidth');
                     if (downlinkBandwidth) downlinkBandwidth.value = restrict.rate_limit;
                     const downlinkBurst = document.getElementById('edit-downlink-burst');
@@ -1926,6 +1944,7 @@
                         delay: parseInt(formData.get('edit_uplink_delay')),
                         loss: parseFloat(formData.get('edit_uplink_loss')),
                         jitter: parseInt(formData.get('edit_uplink_jitter')),
+                        throttle_type: formData.get('edit_uplink_rate_type'),
                         latency_type: formData.get('edit_uplink_latency_type'),
                         loss_type: formData.get('edit_uplink_loss_type')
                     } : null
@@ -1939,6 +1958,7 @@
                         delay: parseInt(formData.get('edit_downlink_delay')),
                         loss: parseFloat(formData.get('edit_downlink_loss')),
                         jitter: parseInt(formData.get('edit_downlink_jitter')),
+                        throttle_type: formData.get('edit_downlink_rate_type'),
                         latency_type: formData.get('edit_downlink_latency_type'),
                         loss_type: formData.get('edit_downlink_loss_type')
                     } : null
@@ -2022,6 +2042,7 @@
                         delay: parseInt(formData.get('uplink_delay')),
                         loss: parseFloat(formData.get('uplink_loss')),
                         jitter: parseInt(formData.get('uplink_jitter')),
+                        throttle_type: formData.get('uplink_rate_type'),
                         latency_type: formData.get('uplink_latency_type'),
                         loss_type: formData.get('uplink_loss_type')
                     } : null
@@ -2035,6 +2056,7 @@
                         delay: parseInt(formData.get('downlink_delay')),
                         loss: parseFloat(formData.get('downlink_loss')),
                         jitter: parseInt(formData.get('downlink_jitter')),
+                        throttle_type: formData.get('downlink_rate_type'),
                         latency_type: formData.get('downlink_latency_type'),
                         loss_type: formData.get('downlink_loss_type')
                     } : null

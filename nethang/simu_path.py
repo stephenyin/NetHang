@@ -52,6 +52,8 @@ class SimuSettings:
             return 'random'
         elif key == 'latency_type':
             return 'off'
+        elif key == 'throttle_type':
+            return 'off'
         else:
             app.logger.info(f"Not implemented key: {key}")
 
@@ -64,7 +66,8 @@ class SimuSettings:
             self.restrict_settings['delay'] == other.restrict_settings['delay'] and \
             self.restrict_settings['jitter'] == other.restrict_settings['jitter'] and \
             self.restrict_settings['loss_type'] == other.restrict_settings['loss_type'] and \
-            self.restrict_settings['latency_type'] == other.restrict_settings['latency_type']
+            self.restrict_settings['latency_type'] == other.restrict_settings['latency_type'] and \
+            self.restrict_settings['throttle_type'] == other.restrict_settings['throttle_type']
         )
 
     def to_dict(self):
