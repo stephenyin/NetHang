@@ -48,6 +48,10 @@ class SimuSettings:
             return 0
         elif key == 'jitter':
             return 0
+        elif key == 'loss_type':
+            return 'random'
+        elif key == 'latency_type':
+            return 'off'
         else:
             app.logger.info(f"Not implemented key: {key}")
 
@@ -59,7 +63,8 @@ class SimuSettings:
             self.restrict_settings['loss'] == other.restrict_settings['loss'] and \
             self.restrict_settings['delay'] == other.restrict_settings['delay'] and \
             self.restrict_settings['jitter'] == other.restrict_settings['jitter'] and \
-            self.restrict_settings['reorder_allowed'] == other.restrict_settings['reorder_allowed']
+            self.restrict_settings['loss_type'] == other.restrict_settings['loss_type'] and \
+            self.restrict_settings['latency_type'] == other.restrict_settings['latency_type']
         )
 
     def to_dict(self):
@@ -141,7 +146,8 @@ class SimuPath:
             jitter : int = 0,
             jitter_dist : str = 'normal',
             slot : list = [0, 0],
-            reorder_allowed : bool = False
+            loss_type : str = 'random',
+            latency_type : str = 'off'
             ):
 
         class_str_ = ''
@@ -175,14 +181,35 @@ class SimuPath:
 
         netem_str_ = ''
         netem_str_ += f' limit {qdepth}'
-        delay_, jitter_ = self.__get_delay_jitter_param(delay, jitter)
-        if delay_ != 0 or jitter_ != 0:
-            netem_str_ += ' delay'
-            netem_str_ += f' {delay_}ms'
-            if jitter_ != 0:
-                netem_str_ += f' {jitter_}ms distribution {jitter_dist}'
+
+        # If jitter-reorder-off is selected (jitter > 0 and latency_type == 'jitter-reorder-off'),
+        # use slot for jitter instead of delay+jitter approach
+        use_slot_for_jitter = (jitter > 0 and latency_type == 'jitter-reorder-off')
+
+        if use_slot_for_jitter:
+            # Use slot for jitter: calculate slot from jitter value
+            # Slot format: [min_delay, max_delay] where jitter = max_delay - min_delay
+            # Slot creates time slots for packet transmission, creating jitter effect
+            if delay > 0:
+                slot_for_jitter = [delay, delay + jitter]
+            else:
+                # If delay is 0, use [0, jitter] for slot
+                slot_for_jitter = [0, jitter]
+
+            # Use slot for jitter (slot already includes the delay range, so no separate delay needed)
+            netem_str_ += f' slot {slot_for_jitter[0]}ms {slot_for_jitter[1]}ms'
+        else:
+            # Keep current solution: use delay + jitter approach
+            delay_, jitter_ = self.__get_delay_jitter_param(delay, jitter)
+            if delay_ != 0 or jitter_ != 0:
+                netem_str_ += ' delay'
+                netem_str_ += f' {delay_}ms'
+                if jitter_ != 0:
+                    netem_str_ += f' {jitter_}ms distribution {jitter_dist}'
+            # Use slot as passed (might be [0, 0] or from config)
+            netem_str_ += f' slot {slot[0]}ms {slot[1]}ms'
+
         netem_str_ += f' loss {loss}%'
-        netem_str_ += f' slot {slot[0]}ms {slot[1]}ms'
 
         SimuPathManager.run_cmd('tc class {opt} dev {iface} parent {handle}: classid {handle}:{host_num} htb {class_str} quantum 60000'.format(
             opt = opt, iface = self.__direction[direction_]['to'], handle = SimuPathManager.handle_name, host_num = self.filter.mark, class_str = class_str_))
@@ -272,7 +299,8 @@ class SimuPath:
             jitter = config.get('jitter', 0),
             jitter_dist = config.get('jitter_dist', 'normal'),
             slot = config.get('slot', [0, 0]),
-            reorder_allowed = config.get('reorder_allowed', False),
+            loss_type = config.get('loss_type', 'random'),
+            latency_type = config.get('latency_type', 'off')
         )
 
     def _simu_path_worker(self):

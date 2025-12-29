@@ -349,10 +349,10 @@
                                                     <div
                                                         class="d-flex justify-content-between align-items-center border-bottom pb-2">
                                                         <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
-                                                        <select class="form-select" style="width: auto;"
+                                                        <select class="form-select" style="width: 50%;"
                                                             id="uplink-rate-type" name="uplink_rate_type">
-                                                            <option value="unlimited">Unlimited</option>
-                                                            <option value="custom">Custom</option>
+                                                            <option value="off">Off</option>
+                                                            <option value="on">On</option>
                                                         </select>
                                                     </div>
                                                     <div class="row mt-3" id="uplink-throttle-inputs"
@@ -390,9 +390,19 @@
                                                 </div>
                                                 <!-- Latency Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
-                                                    </h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Latency</h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="uplink-latency-type" name="uplink_latency_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="constant">Constant</option>
+                                                            <option value="jitter-reorder-on">Jitter (Reorder On)</option>
+                                                            <option value="jitter-reorder-off">Jitter (Reorder Off)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="uplink-latency-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="uplink-delay" class="form-label"
@@ -402,32 +412,34 @@
                                                                     disabled>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6" id="uplink-jitter-container" style="display: none;">
                                                             <div class="mb-3">
                                                                 <label for="uplink-jitter" class="form-label"
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-jitter" name="uplink_jitter" value="0"
                                                                     disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="uplink-reorder" class="form-label"
-                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
-                                                                <select class="form-select" id="uplink-reorder"
-                                                                    name="uplink_reorder" disabled>
-                                                                    <option value="false">No</option>
-                                                                    <option value="true">Yes</option>
-                                                                </select>
+                                                                <input type="hidden" id="uplink-reorder" name="uplink_reorder" value="false">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <!-- Loss Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Loss <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Burst level controls the average burst length and correlation." style="font-size: 0.9rem; cursor: help;"></i></h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="uplink-loss-type" name="uplink_loss_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="random">Random</option>
+                                                            <option value="burst-low">Burst (low)</option>
+                                                            <option value="burst-medium">Burst (medium)</option>
+                                                            <option value="burst-high">Burst (high)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="uplink-loss-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="uplink-packet-loss" class="form-label"
@@ -435,20 +447,6 @@
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-packet-loss" name="uplink_loss" value="0"
                                                                     step="0.1" min="0" max="100" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="uplink-loss-distribution" class="form-label"
-                                                                    style="font-size: 0.8rem;">Loss Distribution</label>
-                                                                <select class="form-select"
-                                                                    id="uplink-loss-distribution"
-                                                                    name="uplink_loss_distribution" disabled>
-                                                                    <option value="random">Random</option>
-                                                                    <option value="burst_low">Burst Low</option>
-                                                                    <option value="burst_medium">Burst Medium</option>
-                                                                    <option value="burst_high">Burst High</option>
-                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -484,10 +482,10 @@
                                                     <div
                                                         class="d-flex justify-content-between align-items-center border-bottom pb-2">
                                                         <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
-                                                        <select class="form-select" style="width: auto;"
+                                                        <select class="form-select" style="width: 50%;"
                                                             id="downlink-rate-type" name="downlink_rate_type">
-                                                            <option value="unlimited">Unlimited</option>
-                                                            <option value="custom">Custom</option>
+                                                            <option value="off">Off</option>
+                                                            <option value="on">On</option>
                                                         </select>
                                                     </div>
                                                     <div class="row mt-3" id="downlink-throttle-inputs"
@@ -525,9 +523,19 @@
                                                 </div>
                                                 <!-- Latency Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
-                                                    </h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Latency</h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="downlink-latency-type" name="downlink_latency_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="constant">Constant</option>
+                                                            <option value="jitter-reorder-on">Jitter (Reorder On)</opti Jitteron>
+                                                            <option value="jitter-reorder-off">Jitter (Reorder Off)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="downlink-latency-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="downlink-delay" class="form-label"
@@ -537,32 +545,34 @@
                                                                     disabled>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6" id="downlink-jitter-container" style="display: none;">
                                                             <div class="mb-3">
                                                                 <label for="downlink-jitter" class="form-label"
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-jitter" name="downlink_jitter"
                                                                     value="0" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="downlink-reorder" class="form-label"
-                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
-                                                                <select class="form-select" id="downlink-reorder"
-                                                                    name="downlink_reorder" disabled>
-                                                                    <option value="false">No</option>
-                                                                    <option value="true">Yes</option>
-                                                                </select>
+                                                                <input type="hidden" id="downlink-reorder" name="downlink_reorder" value="false">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <!-- Loss Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Loss <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Burst level controls the average burst length and correlation." style="font-size: 0.9rem; cursor: help;"></i></h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="downlink-loss-type" name="downlink_loss_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="random">Random</option>
+                                                            <option value="burst-low">Burst (low)</option>
+                                                            <option value="burst-medium">Burst (medium)</option>
+                                                            <option value="burst-high">Burst (high)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="downlink-loss-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="downlink-packet-loss" class="form-label"
@@ -570,21 +580,6 @@
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-packet-loss" name="downlink_loss"
                                                                     value="0" step="0.1" min="0" max="100" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="downlink-loss-distribution"
-                                                                    class="form-label" style="font-size: 0.8rem;">Loss
-                                                                    Distribution</label>
-                                                                <select class="form-select"
-                                                                    id="downlink-loss-distribution"
-                                                                    name="downlink_loss_distribution" disabled>
-                                                                    <option value="random">Random</option>
-                                                                    <option value="burst_low">Burst Low</option>
-                                                                    <option value="burst_medium">Burst Medium</option>
-                                                                    <option value="burst_high">Burst High</option>
-                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -701,10 +696,10 @@
                                                     <div
                                                         class="d-flex justify-content-between align-items-center border-bottom pb-2">
                                                         <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
-                                                        <select class="form-select" style="width: auto;"
+                                                        <select class="form-select" style="width: 50%;"
                                                             id="edit-uplink-rate-type" name="edit_uplink_rate_type">
-                                                            <option value="unlimited">Unlimited</option>
-                                                            <option value="custom">Custom</option>
+                                                            <option value="off">Off</option>
+                                                            <option value="on">On</option>
                                                         </select>
                                                     </div>
                                                     <div class="row mt-3" id="edit-uplink-throttle-inputs"
@@ -744,9 +739,19 @@
                                                 </div>
                                                 <!-- Latency Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
-                                                    </h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Latency</h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="edit-uplink-latency-type" name="edit_uplink_latency_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="constant">Constant</option>
+                                                            <option value="jitter-reorder-on">Jitter (Reorder On)</opti Jitteron>
+                                                            <option value="jitter-reorder-off">Jitter (Reorder Off)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-uplink-latency-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="edit-uplink-delay" class="form-label"
@@ -756,32 +761,34 @@
                                                                     value="0" disabled>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6" id="edit-uplink-jitter-container" style="display: none;">
                                                             <div class="mb-3">
                                                                 <label for="edit-uplink-jitter" class="form-label"
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-jitter" name="edit_uplink_jitter"
                                                                     value="0" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="edit-uplink-reorder" class="form-label"
-                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
-                                                                <select class="form-select" id="edit-uplink-reorder"
-                                                                    name="edit_uplink_reorder" disabled>
-                                                                    <option value="false">No</option>
-                                                                    <option value="true">Yes</option>
-                                                                </select>
+                                                                <input type="hidden" id="edit-uplink-reorder" name="edit_uplink_reorder" value="false">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <!-- Loss Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Loss <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Burst level controls the average burst length and correlation." style="font-size: 0.9rem; cursor: help;"></i></h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="edit-uplink-loss-type" name="edit_uplink_loss_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="random">Random</option>
+                                                            <option value="burst-low">Burst (low)</option>
+                                                            <option value="burst-medium">Burst (medium)</option>
+                                                            <option value="burst-high">Burst (high)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-uplink-loss-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="edit-uplink-packet-loss" class="form-label"
@@ -789,21 +796,6 @@
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-packet-loss" name="edit_uplink_loss"
                                                                     value="0" step="0.1" min="0" max="100" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="edit-uplink-loss-distribution"
-                                                                    class="form-label" style="font-size: 0.8rem;">Loss
-                                                                    Distribution</label>
-                                                                <select class="form-select"
-                                                                    id="edit-uplink-loss-distribution"
-                                                                    name="edit_uplink_loss_distribution" disabled>
-                                                                    <option value="random">Random</option>
-                                                                    <option value="burst_low">Burst Low</option>
-                                                                    <option value="burst_medium">Burst Medium</option>
-                                                                    <option value="burst_high">Burst High</option>
-                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -839,10 +831,10 @@
                                                     <div
                                                         class="d-flex justify-content-between align-items-center border-bottom pb-2">
                                                         <h6 class="mb-0" style="font-weight: bold;">Throttle</h6>
-                                                        <select class="form-select" style="width: auto;"
+                                                        <select class="form-select" style="width: 50%;"
                                                             id="edit-downlink-rate-type" name="edit_downlink_rate_type">
-                                                            <option value="unlimited">Unlimited</option>
-                                                            <option value="custom">Custom</option>
+                                                            <option value="off">Off</option>
+                                                            <option value="on">On</option>
                                                         </select>
                                                     </div>
                                                     <div class="row mt-3" id="edit-downlink-throttle-inputs"
@@ -882,9 +874,19 @@
                                                 </div>
                                                 <!-- Latency Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Latency
-                                                    </h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Latency</h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="edit-downlink-latency-type" name="edit_downlink_latency_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="constant">Constant</option>
+                                                            <option value="jitter-reorder-on">Jitter (Reorder On)</opti Jitteron>
+                                                            <option value="jitter-reorder-off">Jitter (Reorder Off)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-downlink-latency-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="edit-downlink-delay" class="form-label"
@@ -894,32 +896,34 @@
                                                                     value="0" disabled>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6" id="edit-downlink-jitter-container" style="display: none;">
                                                             <div class="mb-3">
                                                                 <label for="edit-downlink-jitter" class="form-label"
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-jitter"
                                                                     name="edit_downlink_jitter" value="0" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="edit-downlink-reorder" class="form-label"
-                                                                    style="font-size: 0.8rem;">Allow Reordering</label>
-                                                                <select class="form-select" id="edit-downlink-reorder"
-                                                                    name="edit_downlink_reorder" disabled>
-                                                                    <option value="false">No</option>
-                                                                    <option value="true">Yes</option>
-                                                                </select>
+                                                                <input type="hidden" id="edit-downlink-reorder" name="edit_downlink_reorder" value="false">
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <!-- Loss Group -->
                                                 <div class="col-md-12 mb-3">
-                                                    <h6 class="border-bottom pb-2" style="font-weight: bold;">Loss</h6>
-                                                    <div class="row">
+                                                    <div
+                                                        class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                                        <h6 class="mb-0" style="font-weight: bold;">Loss <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Burst level controls the average burst length and correlation." style="font-size: 0.9rem; cursor: help;"></i></h6>
+                                                        <select class="form-select" style="width: 50%;"
+                                                            id="edit-downlink-loss-type" name="edit_downlink_loss_type">
+                                                            <option value="off">Off</option>
+                                                            <option value="random">Random</option>
+                                                            <option value="burst-low">Burst (low)</option>
+                                                            <option value="burst-medium">Burst (medium)</option>
+                                                            <option value="burst-high">Burst (high)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row mt-3" id="edit-downlink-loss-inputs"
+                                                        style="display: none;">
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="edit-downlink-packet-loss"
@@ -929,21 +933,6 @@
                                                                     id="edit-downlink-packet-loss"
                                                                     name="edit_downlink_loss" value="0" step="0.1"
                                                                     min="0" max="100" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6" style="display: none;">
-                                                            <div class="mb-3">
-                                                                <label for="edit-downlink-loss-distribution"
-                                                                    class="form-label" style="font-size: 0.8rem;">Loss
-                                                                    Distribution</label>
-                                                                <select class="form-select"
-                                                                    id="edit-downlink-loss-distribution"
-                                                                    name="edit_downlink_loss_distribution" disabled>
-                                                                    <option value="random">Random</option>
-                                                                    <option value="burst_low">Burst Low</option>
-                                                                    <option value="burst_medium">Burst Medium</option>
-                                                                    <option value="burst_high">Burst High</option>
-                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -997,6 +986,12 @@
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
+
+        // Initialize Bootstrap 5 tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
     })
 
     // Initialize error toast
@@ -1524,103 +1519,229 @@
 
     // Function to handle path editing
     function editPath(pathId) {
-        localStorage.setItem('lastManipulatedPathId', pathId);
-        const path = pathsData.find(p => p.id === pathId);
-        if (!path) return;
+        try {
+            // Set a flag to prevent radio button change handlers from interfering during initialization
+            window._initializingEditModal = true;
+
+            localStorage.setItem('lastManipulatedPathId', pathId);
+            // Convert pathId to number for comparison
+            const pathIdNum = typeof pathId === 'string' ? parseInt(pathId) : pathId;
+            const path = pathsData.find(p => p.id === pathIdNum || p.id === pathId);
+            if (!path) {
+                console.error('Path not found:', pathId);
+                window._initializingEditModal = false;
+                return;
+            }
 
         // Set the path ID in the hidden input
-        document.getElementById('edit-path-id').value = pathId;
+        const pathIdInput = document.getElementById('edit-path-id');
+        if (pathIdInput) pathIdInput.value = pathId;
 
         // Set filter information
-        document.getElementById('edit-path-protocol').textContent = path.filter_settings.protocol.toUpperCase();
-        document.getElementById('edit-path-lan').textContent = `${path.filter_settings.lan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.lan_port : ''}`;
-        document.getElementById('edit-path-wan').textContent = `${path.filter_settings.wan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.wan_port : ''}`;
+        const protocolEl = document.getElementById('edit-path-protocol');
+        if (protocolEl) protocolEl.textContent = path.filter_settings.protocol.toUpperCase();
+        const lanEl = document.getElementById('edit-path-lan');
+        if (lanEl) lanEl.textContent = `${path.filter_settings.lan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.lan_port : ''}`;
+        const wanEl = document.getElementById('edit-path-wan');
+        if (wanEl) wanEl.textContent = `${path.filter_settings.wan_ip}${path.filter_settings.protocol !== 'ip' ? ':' + path.filter_settings.wan_port : ''}`;
 
         // Set simulation mode
         if (path.simu_settings.mode === 'model') {
-            document.getElementById('edit-simulation-models-radio').checked = true;
-            document.getElementById('edit-simulation-models').style.display = 'block';
-            document.getElementById('edit-simulation-custom').style.display = 'none';
-            document.getElementById('edit-path-model').value = path.simu_settings.model || '';
+            const modelsRadio = document.getElementById('edit-simulation-models-radio');
+            if (modelsRadio) modelsRadio.checked = true;
+            const modelsDiv = document.getElementById('edit-simulation-models');
+            if (modelsDiv) modelsDiv.style.display = 'block';
+            const customDiv = document.getElementById('edit-simulation-custom');
+            if (customDiv) customDiv.style.display = 'none';
+            const modelSelect = document.getElementById('edit-path-model');
+            if (modelSelect) modelSelect.value = path.simu_settings.model || '';
         } else {
-            document.getElementById('edit-simulation-custom-radio').checked = true;
-            document.getElementById('edit-simulation-models').style.display = 'none';
-            document.getElementById('edit-simulation-custom').style.display = 'block';
+            const customRadio = document.getElementById('edit-simulation-custom-radio');
+            if (customRadio) customRadio.checked = true;
+            const modelsDiv2 = document.getElementById('edit-simulation-models');
+            if (modelsDiv2) modelsDiv2.style.display = 'none';
+            const customDiv2 = document.getElementById('edit-simulation-custom');
+            if (customDiv2) customDiv2.style.display = 'block';
 
             // Set uplink settings
             if (path.simu_settings.uplink.mode === 'bypass') {
-                document.getElementById('edit-uplink-bypass-radio').checked = true;
-                document.getElementById('edit-uplink-custom').style.display = 'none';
-                document.getElementById('edit-uplink-bypass').style.display = 'block';
-                document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
+                const uplinkBypassRadio = document.getElementById('edit-uplink-bypass-radio');
+                if (uplinkBypassRadio) uplinkBypassRadio.checked = true;
+                const uplinkCustom = document.getElementById('edit-uplink-custom');
+                if (uplinkCustom) uplinkCustom.style.display = 'none';
+                const uplinkBypass = document.getElementById('edit-uplink-bypass');
+                if (uplinkBypass) uplinkBypass.style.display = 'block';
+                const uplinkCustomInputs = document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select');
+                if (uplinkCustomInputs) uplinkCustomInputs.forEach(input => {
                     input.disabled = true;
                 });
             } else {
-                document.getElementById('edit-uplink-custom-radio').checked = true;
-                document.getElementById('edit-uplink-custom').style.display = 'block';
-                document.getElementById('edit-uplink-bypass').style.display = 'none';
-                document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
-                    input.disabled = false;
-                });
+                // First, set all the form values BEFORE checking the radio button
+                // This prevents the change event handler from using default values
                 if (path.simu_settings.uplink.restrict_settings) {
                     const restrict = path.simu_settings.uplink.restrict_settings;
                     const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
-                    document.getElementById('edit-uplink-rate-type').value = isUnlimited ? 'unlimited' : 'custom';
-                    document.getElementById('edit-uplink-throttle-inputs').style.display = isUnlimited ? 'none' : 'flex';
-                    document.getElementById('edit-uplink-bandwidth').value = restrict.rate_limit;
-                    // document.getElementById('edit-uplink-bandwidth').disabled = isUnlimited;
-                    // document.getElementById('edit-uplink-bandwidth').style.display = isUnlimited ? 'none' : 'block';
-                    document.getElementById('edit-uplink-burst').value = restrict.burst_size;
-                    document.getElementById('edit-uplink-queue-depth').value = Math.max(1, restrict.qdepth || 1000);
-                    // document.getElementById('edit-uplink-queue-depth').disabled = isUnlimited;
-                    // document.getElementById('edit-uplink-queue-depth').style.display = isUnlimited ? 'none' : 'block';
-                    document.getElementById('edit-uplink-delay').value = restrict.delay;
-                    document.getElementById('edit-uplink-jitter').value = restrict.jitter;
-                    document.getElementById('edit-uplink-reorder').value = restrict.reorder_allowed;
-                    document.getElementById('edit-uplink-packet-loss').value = restrict.loss;
-                    document.getElementById('edit-uplink-loss-distribution').value = restrict.loss_distribution || 'random';
+                    const rateType = document.getElementById('edit-uplink-rate-type');
+                    if (rateType) rateType.value = isUnlimited ? 'off' : 'on';
+                    const throttleInputs = document.getElementById('edit-uplink-throttle-inputs');
+                    if (throttleInputs) throttleInputs.style.display = isUnlimited ? 'none' : 'flex';
+                    const bandwidth = document.getElementById('edit-uplink-bandwidth');
+                    if (bandwidth) bandwidth.value = restrict.rate_limit;
+                    const burst = document.getElementById('edit-uplink-burst');
+                    if (burst) burst.value = restrict.burst_size;
+                    const queueDepth = document.getElementById('edit-uplink-queue-depth');
+                    if (queueDepth) queueDepth.value = Math.max(1, restrict.qdepth || 1000);
+                    const delay = document.getElementById('edit-uplink-delay');
+                    if (delay) delay.value = restrict.delay || 0;
+                    const jitter = document.getElementById('edit-uplink-jitter');
+                    if (jitter) jitter.value = restrict.jitter || 0;
+                    const packetLoss = document.getElementById('edit-uplink-packet-loss');
+                    if (packetLoss) packetLoss.value = restrict.loss || 0;
+                    const lossDist = document.getElementById('edit-uplink-loss-distribution');
+                    if (lossDist) lossDist.value = restrict.loss_type || 'random';
+
+                    // Set latency type - read directly from latency_type
+                    let latencyType = restrict.latency_type;
+                    const latencyTypeSelect = document.getElementById('edit-uplink-latency-type');
+                    if (latencyTypeSelect) {
+                        latencyTypeSelect.value = latencyType || 'off';
+                    }
+
+                    // Set loss type - read directly from loss_type
+                    let lossType = restrict.loss_type;
+                    const lossTypeSelect = document.getElementById('edit-uplink-loss-type');
+                    if (lossTypeSelect) {
+                        lossTypeSelect.value = lossType || 'off';
+                    }
+                }
+
+                // Now check the radio button and set up the UI
+                // This will trigger the change event handler, but the dropdowns already have correct values
+                const uplinkCustomRadio = document.getElementById('edit-uplink-custom-radio');
+                if (uplinkCustomRadio) uplinkCustomRadio.checked = true;
+                const uplinkCustom2 = document.getElementById('edit-uplink-custom');
+                if (uplinkCustom2) uplinkCustom2.style.display = 'block';
+                const uplinkBypass2 = document.getElementById('edit-uplink-bypass');
+                if (uplinkBypass2) uplinkBypass2.style.display = 'none';
+                const uplinkCustomInputs2 = document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select');
+                if (uplinkCustomInputs2) uplinkCustomInputs2.forEach(input => {
+                    input.disabled = false;
+                });
+
+                // Trigger change events on dropdowns AFTER values are set and radio is checked
+                const latencyTypeSelect = document.getElementById('edit-uplink-latency-type');
+                if (latencyTypeSelect) {
+                    latencyTypeSelect.dispatchEvent(new Event('change'));
+                }
+                const lossTypeSelect = document.getElementById('edit-uplink-loss-type');
+                if (lossTypeSelect) {
+                    lossTypeSelect.dispatchEvent(new Event('change'));
                 }
             }
 
             // Set downlink settings
             if (path.simu_settings.downlink.mode === 'bypass') {
-                document.getElementById('edit-downlink-bypass-radio').checked = true;
-                document.getElementById('edit-downlink-custom').style.display = 'none';
-                document.getElementById('edit-downlink-bypass').style.display = 'block';
-                document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
+                const downlinkBypassRadio = document.getElementById('edit-downlink-bypass-radio');
+                if (downlinkBypassRadio) downlinkBypassRadio.checked = true;
+                const downlinkCustom = document.getElementById('edit-downlink-custom');
+                if (downlinkCustom) downlinkCustom.style.display = 'none';
+                const downlinkBypass = document.getElementById('edit-downlink-bypass');
+                if (downlinkBypass) downlinkBypass.style.display = 'block';
+                const downlinkCustomInputs = document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select');
+                if (downlinkCustomInputs) downlinkCustomInputs.forEach(input => {
                     input.disabled = true;
                 });
             } else {
-                document.getElementById('edit-downlink-custom-radio').checked = true;
-                document.getElementById('edit-downlink-custom').style.display = 'block';
-                document.getElementById('edit-downlink-bypass').style.display = 'none';
-                document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
-                    input.disabled = false;
-                });
+                // First, set all the form values BEFORE checking the radio button
+                // This prevents the change event handler from using default values
                 if (path.simu_settings.downlink.restrict_settings) {
                     const restrict = path.simu_settings.downlink.restrict_settings;
                     const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
-                    document.getElementById('edit-downlink-rate-type').value = isUnlimited ? 'unlimited' : 'custom';
-                    document.getElementById('edit-downlink-throttle-inputs').style.display = isUnlimited ? 'none' : 'flex';
-                    document.getElementById('edit-downlink-bandwidth').value = restrict.rate_limit;
-                    // document.getElementById('edit-downlink-bandwidth').disabled = isUnlimited;
-                    // document.getElementById('edit-downlink-bandwidth').style.display = isUnlimited ? 'none' : 'block';
-                    document.getElementById('edit-downlink-burst').value = restrict.burst_size;
-                    document.getElementById('edit-downlink-queue-depth').value = Math.max(1, restrict.qdepth || 1000);
-                    // document.getElementById('edit-downlink-queue-depth').disabled = isUnlimited;
-                    // document.getElementById('edit-downlink-queue-depth').style.display = isUnlimited ? 'none' : 'block';
-                    document.getElementById('edit-downlink-delay').value = restrict.delay;
-                    document.getElementById('edit-downlink-jitter').value = restrict.jitter;
-                    document.getElementById('edit-downlink-reorder').value = restrict.reorder_allowed;
-                    document.getElementById('edit-downlink-packet-loss').value = restrict.loss;
-                    document.getElementById('edit-downlink-loss-distribution').value = restrict.loss_distribution || 'random';
+                    const downlinkRateType = document.getElementById('edit-downlink-rate-type');
+                    if (downlinkRateType) downlinkRateType.value = isUnlimited ? 'off' : 'on';
+                    const downlinkThrottleInputs = document.getElementById('edit-downlink-throttle-inputs');
+                    if (downlinkThrottleInputs) downlinkThrottleInputs.style.display = isUnlimited ? 'none' : 'flex';
+                    const downlinkBandwidth = document.getElementById('edit-downlink-bandwidth');
+                    if (downlinkBandwidth) downlinkBandwidth.value = restrict.rate_limit;
+                    const downlinkBurst = document.getElementById('edit-downlink-burst');
+                    if (downlinkBurst) downlinkBurst.value = restrict.burst_size;
+                    const downlinkQueueDepth = document.getElementById('edit-downlink-queue-depth');
+                    if (downlinkQueueDepth) downlinkQueueDepth.value = Math.max(1, restrict.qdepth || 1000);
+                    const downlinkDelay = document.getElementById('edit-downlink-delay');
+                    if (downlinkDelay) downlinkDelay.value = restrict.delay || 0;
+                    const downlinkJitter = document.getElementById('edit-downlink-jitter');
+                    if (downlinkJitter) downlinkJitter.value = restrict.jitter || 0;
+                    const downlinkPacketLoss = document.getElementById('edit-downlink-packet-loss');
+                    if (downlinkPacketLoss) downlinkPacketLoss.value = restrict.loss || 0;
+                    const downlinkLossDist = document.getElementById('edit-downlink-loss-distribution');
+                    if (downlinkLossDist) downlinkLossDist.value = restrict.loss_type || 'random';
+
+                    // Set latency type - read directly from latency_type
+                    let latencyType2 = restrict.latency_type;
+                    const latencyTypeSelect = document.getElementById('edit-downlink-latency-type');
+                    if (latencyTypeSelect) {
+                        latencyTypeSelect.value = latencyType2 || 'off';
+                    }
+
+                    // Set loss type - read directly from loss_type
+                    let lossType2 = restrict.loss_type;
+                    const downlinkLossType = document.getElementById('edit-downlink-loss-type');
+                    if (downlinkLossType) {
+                        downlinkLossType.value = lossType2 || 'off';
+                    }
+                }
+
+                // Now check the radio button and set up the UI
+                // This will trigger the change event handler, but the dropdowns already have correct values
+                const downlinkCustomRadio = document.getElementById('edit-downlink-custom-radio');
+                if (downlinkCustomRadio) downlinkCustomRadio.checked = true;
+                const downlinkCustom2 = document.getElementById('edit-downlink-custom');
+                if (downlinkCustom2) downlinkCustom2.style.display = 'block';
+                const downlinkBypass2 = document.getElementById('edit-downlink-bypass');
+                if (downlinkBypass2) downlinkBypass2.style.display = 'none';
+                const downlinkCustomInputs2 = document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select');
+                if (downlinkCustomInputs2) downlinkCustomInputs2.forEach(input => {
+                    input.disabled = false;
+                });
+
+                // Trigger change events on dropdowns AFTER values are set and radio is checked
+                const downlinkLatencyType = document.getElementById('edit-downlink-latency-type');
+                if (downlinkLatencyType) {
+                    downlinkLatencyType.dispatchEvent(new Event('change'));
+                }
+                const downlinkLossType = document.getElementById('edit-downlink-loss-type');
+                if (downlinkLossType) {
+                    downlinkLossType.dispatchEvent(new Event('change'));
                 }
             }
         }
 
         // Show the modal
-        const editModal = new bootstrap.Modal(document.getElementById('editPathModal'));
+        const editModalElement = document.getElementById('editPathModal');
+        if (!editModalElement) {
+            console.error('Edit path modal element not found');
+            return;
+        }
+
+        const editModal = new bootstrap.Modal(editModalElement);
+
+        // Initialize tooltips in the modal before showing
+        var tooltipTriggerList = [].slice.call(editModalElement.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
         editModal.show();
+
+        // Clear the initialization flag after a short delay to allow all handlers to complete
+        setTimeout(() => {
+            window._initializingEditModal = false;
+        }, 100);
+        } catch (error) {
+            console.error('Error opening edit path modal:', error);
+            alert('Error opening edit path modal: ' + error.message);
+            window._initializingEditModal = false;
+        }
     }
 
     // Handle simulation mode radio buttons in Edit Path modal
@@ -1669,10 +1790,19 @@
         if (this.checked) {
             document.getElementById('edit-uplink-custom').style.display = 'block';
             document.getElementById('edit-uplink-bypass').style.display = 'none';
-            // Enable all uplink parameter inputs
+            // Enable all uplink parameter inputs (latency and loss inputs will be controlled by their dropdowns)
             document.querySelectorAll('#edit-uplink-custom input, #edit-uplink-custom select').forEach(input => {
-                input.disabled = false;
+                // Skip delay, jitter, reorder, packet-loss, and loss-distribution inputs - they're managed by dropdowns
+                if (!input.id.includes('delay') && !input.id.includes('jitter') && !input.id.includes('reorder') &&
+                    !input.id.includes('packet-loss') && !input.id.includes('loss-distribution')) {
+                    input.disabled = false;
+                }
             });
+            // Only trigger dropdown changes if not initializing (to avoid resetting values)
+            if (!window._initializingEditModal) {
+                document.getElementById('edit-uplink-latency-type').dispatchEvent(new Event('change'));
+                document.getElementById('edit-uplink-loss-type').dispatchEvent(new Event('change'));
+            }
         }
     });
 
@@ -1692,10 +1822,19 @@
         if (this.checked) {
             document.getElementById('edit-downlink-custom').style.display = 'block';
             document.getElementById('edit-downlink-bypass').style.display = 'none';
-            // Enable all downlink parameter inputs
+            // Enable all downlink parameter inputs (latency and loss inputs will be controlled by their dropdowns)
             document.querySelectorAll('#edit-downlink-custom input, #edit-downlink-custom select').forEach(input => {
-                input.disabled = false;
+                // Skip delay, jitter, reorder, packet-loss, and loss-distribution inputs - they're managed by dropdowns
+                if (!input.id.includes('delay') && !input.id.includes('jitter') && !input.id.includes('reorder') &&
+                    !input.id.includes('packet-loss') && !input.id.includes('loss-distribution')) {
+                    input.disabled = false;
+                }
             });
+            // Only trigger dropdown changes if not initializing (to avoid resetting values)
+            if (!window._initializingEditModal) {
+                document.getElementById('edit-downlink-latency-type').dispatchEvent(new Event('change'));
+                document.getElementById('edit-downlink-loss-type').dispatchEvent(new Event('change'));
+            }
         }
     });
 
@@ -1787,8 +1926,8 @@
                         delay: parseInt(formData.get('edit_uplink_delay')),
                         loss: parseFloat(formData.get('edit_uplink_loss')),
                         jitter: parseInt(formData.get('edit_uplink_jitter')),
-                        reorder_allowed: formData.get('edit_uplink_reorder') === 'true',
-                        loss_distribution: formData.get('edit_uplink_loss_distribution')
+                        latency_type: formData.get('edit_uplink_latency_type'),
+                        loss_type: formData.get('edit_uplink_loss_type')
                     } : null
                 },
                 downlink: {
@@ -1800,8 +1939,8 @@
                         delay: parseInt(formData.get('edit_downlink_delay')),
                         loss: parseFloat(formData.get('edit_downlink_loss')),
                         jitter: parseInt(formData.get('edit_downlink_jitter')),
-                        reorder_allowed: formData.get('edit_downlink_reorder') === 'true',
-                        loss_distribution: formData.get('edit_downlink_loss_distribution')
+                        latency_type: formData.get('edit_downlink_latency_type'),
+                        loss_type: formData.get('edit_downlink_loss_type')
                     } : null
                 }
             }
@@ -1883,8 +2022,8 @@
                         delay: parseInt(formData.get('uplink_delay')),
                         loss: parseFloat(formData.get('uplink_loss')),
                         jitter: parseInt(formData.get('uplink_jitter')),
-                        reorder_allowed: formData.get('uplink_reorder') === 'true',
-                        loss_distribution: formData.get('uplink_loss_distribution')
+                        latency_type: formData.get('uplink_latency_type'),
+                        loss_type: formData.get('uplink_loss_type')
                     } : null
                 },
                 downlink: {
@@ -1896,8 +2035,8 @@
                         delay: parseInt(formData.get('downlink_delay')),
                         loss: parseFloat(formData.get('downlink_loss')),
                         jitter: parseInt(formData.get('downlink_jitter')),
-                        reorder_allowed: formData.get('downlink_reorder') === 'true',
-                        loss_distribution: formData.get('downlink_loss_distribution')
+                        latency_type: formData.get('downlink_latency_type'),
+                        loss_type: formData.get('downlink_loss_type')
                     } : null
                 }
             }
@@ -1956,10 +2095,17 @@
         if (this.checked) {
             document.getElementById('uplink-custom').style.display = 'block';
             document.getElementById('uplink-bypass').style.display = 'none';
-            // Enable all uplink parameter inputs
-            document.querySelectorAll('#uplink-custom input').forEach(input => {
-                input.disabled = false;
+            // Enable all uplink parameter inputs (latency and loss inputs will be controlled by their dropdowns)
+            document.querySelectorAll('#uplink-custom input, #uplink-custom select').forEach(input => {
+                // Skip delay, jitter, reorder, packet-loss, and loss-distribution inputs - they're managed by dropdowns
+                if (!input.id.includes('delay') && !input.id.includes('jitter') && !input.id.includes('reorder') &&
+                    !input.id.includes('packet-loss') && !input.id.includes('loss-distribution')) {
+                    input.disabled = false;
+                }
             });
+            // Trigger latency and loss dropdown changes to properly manage inputs
+            document.getElementById('uplink-latency-type').dispatchEvent(new Event('change'));
+            document.getElementById('uplink-loss-type').dispatchEvent(new Event('change'));
         }
     });
 
@@ -1979,15 +2125,27 @@
         if (this.checked) {
             document.getElementById('downlink-custom').style.display = 'block';
             document.getElementById('downlink-bypass').style.display = 'none';
-            // Enable all downlink parameter inputs
-            document.querySelectorAll('#downlink-custom input').forEach(input => {
-                input.disabled = false;
+            // Enable all downlink parameter inputs (latency and loss inputs will be controlled by their dropdowns)
+            document.querySelectorAll('#downlink-custom input, #downlink-custom select').forEach(input => {
+                // Skip delay, jitter, reorder, packet-loss, and loss-distribution inputs - they're managed by dropdowns
+                if (!input.id.includes('delay') && !input.id.includes('jitter') && !input.id.includes('reorder') &&
+                    !input.id.includes('packet-loss') && !input.id.includes('loss-distribution')) {
+                    input.disabled = false;
+                }
             });
+            // Trigger latency and loss dropdown changes to properly manage inputs
+            document.getElementById('downlink-latency-type').dispatchEvent(new Event('change'));
+            document.getElementById('downlink-loss-type').dispatchEvent(new Event('change'));
         }
     });
 
     // Initialize the modal state when it's shown
     document.getElementById('addPathModal').addEventListener('show.bs.modal', function () {
+        // Re-initialize tooltips in the modal
+        var tooltipTriggerList = [].slice.call(this.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
         // Reset form
         document.getElementById('addPathForm').reset();
 
@@ -2011,9 +2169,9 @@
             input.disabled = true;
         });
 
-        // Set default rate type to unlimited and hide inputs
-        document.getElementById('uplink-rate-type').value = 'unlimited';
-        document.getElementById('downlink-rate-type').value = 'unlimited';
+        // Set default rate type to off and hide inputs
+        document.getElementById('uplink-rate-type').value = 'off';
+        document.getElementById('downlink-rate-type').value = 'off';
         document.getElementById('uplink-throttle-inputs').style.display = 'none';
         document.getElementById('downlink-throttle-inputs').style.display = 'none';
         document.getElementById('uplink-bandwidth').value = '32000000';
@@ -2024,6 +2182,26 @@
         // Set default values for queue depth
         document.getElementById('uplink-queue-depth').value = '1000';
         document.getElementById('downlink-queue-depth').value = '1000';
+
+        // Set default latency type to off and hide inputs
+        document.getElementById('uplink-latency-type').value = 'off';
+        document.getElementById('downlink-latency-type').value = 'off';
+        document.getElementById('uplink-latency-inputs').style.display = 'none';
+        document.getElementById('downlink-latency-inputs').style.display = 'none';
+        document.getElementById('uplink-delay').value = '0';
+        document.getElementById('downlink-delay').value = '0';
+        document.getElementById('uplink-delay').disabled = true;
+        document.getElementById('downlink-delay').disabled = true;
+
+        // Set default loss type to off and hide inputs
+        document.getElementById('uplink-loss-type').value = 'off';
+        document.getElementById('downlink-loss-type').value = 'off';
+        document.getElementById('uplink-loss-inputs').style.display = 'none';
+        document.getElementById('downlink-loss-inputs').style.display = 'none';
+        document.getElementById('uplink-packet-loss').value = '0';
+        document.getElementById('downlink-packet-loss').value = '0';
+        document.getElementById('uplink-packet-loss').disabled = true;
+        document.getElementById('downlink-packet-loss').disabled = true;
     });
 
     // Handle protocol select change
@@ -2046,7 +2224,7 @@
         const inputs = document.getElementById('uplink-throttle-inputs');
         const bandwidth = document.getElementById('uplink-bandwidth');
         const queueDepth = document.getElementById('uplink-queue-depth');
-        if (this.value === 'unlimited') {
+        if (this.value === 'off') {
             inputs.style.display = 'none';
             bandwidth.value = '32000000';
             bandwidth.disabled = true;
@@ -2061,7 +2239,7 @@
         const inputs = document.getElementById('downlink-throttle-inputs');
         const bandwidth = document.getElementById('downlink-bandwidth');
         const queueDepth = document.getElementById('downlink-queue-depth');
-        if (this.value === 'unlimited') {
+        if (this.value === 'off') {
             inputs.style.display = 'none';
             bandwidth.value = '32000000';
             bandwidth.disabled = true;
@@ -2076,7 +2254,7 @@
         const inputs = document.getElementById('edit-uplink-throttle-inputs');
         const bandwidth = document.getElementById('edit-uplink-bandwidth');
         const queueDepth = document.getElementById('edit-uplink-queue-depth');
-        if (this.value === 'unlimited') {
+        if (this.value === 'off') {
             inputs.style.display = 'none';
             bandwidth.value = '32000000';
             bandwidth.disabled = true;
@@ -2091,7 +2269,7 @@
         const inputs = document.getElementById('edit-downlink-throttle-inputs');
         const bandwidth = document.getElementById('edit-downlink-bandwidth');
         const queueDepth = document.getElementById('edit-downlink-queue-depth');
-        if (this.value === 'unlimited') {
+        if (this.value === 'off') {
             inputs.style.display = 'none';
             bandwidth.value = '32000000';
             bandwidth.disabled = true;
@@ -2099,6 +2277,268 @@
         } else {
             inputs.style.display = 'flex';
             bandwidth.disabled = false;
+        }
+    });
+
+    // Add event listeners for latency type changes (Add Path Modal)
+    document.getElementById('uplink-latency-type').addEventListener('change', function () {
+        const latencyInputs = document.getElementById('uplink-latency-inputs');
+        const delay = document.getElementById('uplink-delay');
+        const jitterContainer = document.getElementById('uplink-jitter-container');
+        const reorder = document.getElementById('uplink-reorder');
+
+        if (this.value === 'off') {
+            latencyInputs.style.display = 'none';
+            delay.disabled = true;
+            reorder.value = 'false';
+        } else {
+            latencyInputs.style.display = 'flex';
+            delay.disabled = false;
+
+            if (this.value === 'constant') {
+                jitterContainer.style.display = 'none';
+                reorder.value = 'false';
+            } else {
+                jitterContainer.style.display = 'block';
+                document.getElementById('uplink-jitter').disabled = false;
+
+                if (this.value === 'jitter-reorder-on') {
+                    reorder.value = 'true';
+                } else if (this.value === 'jitter-reorder-off') {
+                    reorder.value = 'false';
+                }
+            }
+        }
+    });
+
+    document.getElementById('downlink-latency-type').addEventListener('change', function () {
+        const latencyInputs = document.getElementById('downlink-latency-inputs');
+        const delay = document.getElementById('downlink-delay');
+        const jitterContainer = document.getElementById('downlink-jitter-container');
+        const reorder = document.getElementById('downlink-reorder');
+
+        if (this.value === 'off') {
+            latencyInputs.style.display = 'none';
+            delay.disabled = true;
+            reorder.value = 'false';
+        } else {
+            latencyInputs.style.display = 'flex';
+            delay.disabled = false;
+
+            if (this.value === 'constant') {
+                jitterContainer.style.display = 'none';
+                reorder.value = 'false';
+            } else {
+                jitterContainer.style.display = 'block';
+                document.getElementById('downlink-jitter').disabled = false;
+
+                if (this.value === 'jitter-reorder-on') {
+                    reorder.value = 'true';
+                } else if (this.value === 'jitter-reorder-off') {
+                    reorder.value = 'false';
+                }
+            }
+        }
+    });
+
+    // Add event listeners for latency type changes (Edit Path Modal)
+    document.getElementById('edit-uplink-latency-type').addEventListener('change', function () {
+        const latencyInputs = document.getElementById('edit-uplink-latency-inputs');
+        const delay = document.getElementById('edit-uplink-delay');
+        const jitterContainer = document.getElementById('edit-uplink-jitter-container');
+        const reorder = document.getElementById('edit-uplink-reorder');
+
+        if (!latencyInputs || !delay || !jitterContainer || !reorder) return;
+
+        if (this.value === 'off') {
+            latencyInputs.style.display = 'none';
+            delay.disabled = true;
+            reorder.value = 'false';
+        } else {
+            latencyInputs.style.display = 'flex';
+            delay.disabled = false;
+
+            if (this.value === 'constant') {
+                jitterContainer.style.display = 'none';
+                reorder.value = 'false';
+            } else {
+                jitterContainer.style.display = 'block';
+                const jitterInput = document.getElementById('edit-uplink-jitter');
+                if (jitterInput) jitterInput.disabled = false;
+
+                if (this.value === 'jitter-reorder-on') {
+                    reorder.value = 'true';
+                } else if (this.value === 'jitter-reorder-off') {
+                    reorder.value = 'false';
+                }
+            }
+        }
+    });
+
+    document.getElementById('edit-downlink-latency-type').addEventListener('change', function () {
+        const latencyInputs = document.getElementById('edit-downlink-latency-inputs');
+        const delay = document.getElementById('edit-downlink-delay');
+        const jitterContainer = document.getElementById('edit-downlink-jitter-container');
+        const reorder = document.getElementById('edit-downlink-reorder');
+
+        if (!latencyInputs || !delay || !jitterContainer || !reorder) return;
+
+        if (this.value === 'off') {
+            latencyInputs.style.display = 'none';
+            delay.disabled = true;
+            reorder.value = 'false';
+        } else {
+            latencyInputs.style.display = 'flex';
+            delay.disabled = false;
+
+            if (this.value === 'constant') {
+                jitterContainer.style.display = 'none';
+                reorder.value = 'false';
+            } else {
+                jitterContainer.style.display = 'block';
+                const jitterInput = document.getElementById('edit-downlink-jitter');
+                if (jitterInput) jitterInput.disabled = false;
+
+                if (this.value === 'jitter-reorder-on') {
+                    reorder.value = 'true';
+                } else if (this.value === 'jitter-reorder-off') {
+                    reorder.value = 'false';
+                }
+            }
+        }
+    });
+
+    // Add event listeners for loss type changes (Add Path Modal)
+    document.getElementById('uplink-loss-type').addEventListener('change', function () {
+        const lossInputs = document.getElementById('uplink-loss-inputs');
+        const lossRate = document.getElementById('uplink-packet-loss');
+        const distribution = document.getElementById('uplink-loss-distribution');
+
+        if (this.value === 'off') {
+            lossInputs.style.display = 'none';
+            lossRate.disabled = true;
+            lossRate.value = '0';
+        } else {
+            lossInputs.style.display = 'flex';
+            lossRate.disabled = false;
+
+            if (this.value === 'random') {
+                distribution.value = 'random';
+            } else {
+                distribution.disabled = false;
+
+                if (this.value === 'burst-low') {
+                    distribution.value = 'burst_low';
+                } else if (this.value === 'burst-medium') {
+                    distribution.value = 'burst_medium';
+                } else if (this.value === 'burst-high') {
+                    distribution.value = 'burst_high';
+                }
+            }
+        }
+    });
+
+    document.getElementById('downlink-loss-type').addEventListener('change', function () {
+        const lossInputs = document.getElementById('downlink-loss-inputs');
+        const lossRate = document.getElementById('downlink-packet-loss');
+        const distribution = document.getElementById('downlink-loss-distribution');
+
+        if (this.value === 'off') {
+            lossInputs.style.display = 'none';
+            lossRate.disabled = true;
+            lossRate.value = '0';
+        } else {
+            lossInputs.style.display = 'flex';
+            lossRate.disabled = false;
+
+            if (this.value === 'random') {
+                distribution.value = 'random';
+            } else {
+                distribution.disabled = false;
+
+                if (this.value === 'burst-low') {
+                    distribution.value = 'burst_low';
+                } else if (this.value === 'burst-medium') {
+                    distribution.value = 'burst_medium';
+                } else if (this.value === 'burst-high') {
+                    distribution.value = 'burst_high';
+                }
+            }
+        }
+    });
+
+    // Add event listeners for loss type changes (Edit Path Modal)
+    document.getElementById('edit-uplink-loss-type').addEventListener('change', function () {
+        const lossInputs = document.getElementById('edit-uplink-loss-inputs');
+        const lossRate = document.getElementById('edit-uplink-packet-loss');
+        const distribution = document.getElementById('edit-uplink-loss-distribution');
+
+        if (this.value === 'off') {
+            lossInputs.style.display = 'none';
+            lossRate.disabled = true;
+            lossRate.value = '0';
+        } else {
+            lossInputs.style.display = 'flex';
+            lossRate.disabled = false;
+
+            // Only set distribution value if not initializing (to preserve saved values during modal load)
+            if (!window._initializingEditModal) {
+                if (this.value === 'random') {
+                    distribution.value = 'random';
+                } else {
+                    distribution.disabled = false;
+
+                    if (this.value === 'burst-low') {
+                        distribution.value = 'burst_low';
+                    } else if (this.value === 'burst-medium') {
+                        distribution.value = 'burst_medium';
+                    } else if (this.value === 'burst-high') {
+                        distribution.value = 'burst_high';
+                    }
+                }
+            } else {
+                // During initialization, just enable the distribution field if needed
+                if (this.value !== 'random' && this.value !== 'off') {
+                    distribution.disabled = false;
+                }
+            }
+        }
+    });
+
+    document.getElementById('edit-downlink-loss-type').addEventListener('change', function () {
+        const lossInputs = document.getElementById('edit-downlink-loss-inputs');
+        const lossRate = document.getElementById('edit-downlink-packet-loss');
+        const distribution = document.getElementById('edit-downlink-loss-distribution');
+
+        if (this.value === 'off') {
+            lossInputs.style.display = 'none';
+            lossRate.disabled = true;
+            lossRate.value = '0';
+        } else {
+            lossInputs.style.display = 'flex';
+            lossRate.disabled = false;
+
+            // Only set distribution value if not initializing (to preserve saved values during modal load)
+            if (!window._initializingEditModal) {
+                if (this.value === 'random') {
+                    distribution.value = 'random';
+                } else {
+                    distribution.disabled = false;
+
+                    if (this.value === 'burst-low') {
+                        distribution.value = 'burst_low';
+                    } else if (this.value === 'burst-medium') {
+                        distribution.value = 'burst_medium';
+                    } else if (this.value === 'burst-high') {
+                        distribution.value = 'burst_high';
+                    }
+                }
+            } else {
+                // During initialization, just enable the distribution field if needed
+                if (this.value !== 'random' && this.value !== 'off') {
+                    distribution.disabled = false;
+                }
+            }
         }
     });
 
