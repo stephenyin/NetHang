@@ -49,7 +49,7 @@ class SimuSettings:
         elif key == 'jitter':
             return 0
         elif key == 'loss_type':
-            return 'random'
+            return 'off'
         elif key == 'latency_type':
             return 'off'
         elif key == 'throttle_type':
@@ -183,36 +183,33 @@ class SimuPath:
             class_str_ += ' cburst {}KB'.format(rate_cburst)
 
         netem_str_ = ''
-        netem_str_ += f' limit {qdepth}'
+        netem_str_ += f'limit {qdepth}'
 
         # If jitter-reorder-off is selected (jitter > 0 and latency_type == 'jitter-reorder-off'),
         # use slot for jitter instead of delay+jitter approach
-        use_slot_for_jitter = (jitter > 0 and latency_type == 'jitter-reorder-off')
+        use_slot_for_jitter = (jitter > 0 and latency_type == 'jitter-reorder-off' and slot == [0, 0])
 
         if use_slot_for_jitter:
-            # Use slot for jitter: calculate slot from jitter value
-            # Slot format: [min_delay, max_delay] where jitter = max_delay - min_delay
-            # Slot creates time slots for packet transmission, creating jitter effect
-            if delay > 0:
-                slot_for_jitter = [delay, delay + jitter]
-            else:
-                # If delay is 0, use [0, jitter] for slot
-                slot_for_jitter = [0, jitter]
+            min_delay, max_delay = self.__get_slot_jitter_param(jitter)
 
-            # Use slot for jitter (slot already includes the delay range, so no separate delay needed)
-            netem_str_ += f' slot {slot_for_jitter[0]}ms {slot_for_jitter[1]}ms'
+            # Use slot for jitter
+            netem_str_ += f' delay {delay}ms slot {min_delay}ms {max_delay}ms'
+        elif slot != [0, 0]:
+            # For model-mode only
+            netem_str_ += f' slot {slot[0]}ms {slot[1]}ms'
         else:
-            # Keep current solution: use delay + jitter approach
+            # Use delay + jitter approach if latency_type is not 'jitter-reorder-off'
             delay_, jitter_ = self.__get_delay_jitter_param(delay, jitter)
             if delay_ != 0 or jitter_ != 0:
-                netem_str_ += ' delay'
-                netem_str_ += f' {delay_}ms'
+                netem_str_ += f' delay {delay_}ms'
                 if jitter_ != 0:
                     netem_str_ += f' {jitter_}ms distribution {jitter_dist}'
-            # Use slot as passed (might be [0, 0] or from config)
-            netem_str_ += f' slot {slot[0]}ms {slot[1]}ms'
+            # Set slot to 0 0 to make sure slot is not used
+            netem_str_ += f' slot 0 0'
 
-        netem_str_ += f' loss {loss}%'
+        if loss_type != 'off':
+            probability_good2bad, probability_bad2good = self.__get_loss_state_param(loss / 100.0, loss_type)
+            netem_str_ += f' loss {probability_good2bad:.6f} {probability_bad2good:.6f}'
 
         SimuPathManager.run_cmd('tc class {opt} dev {iface} parent {handle}: classid {handle}:{host_num} htb {class_str} quantum 60000'.format(
             opt = opt, iface = self.__direction[direction_]['to'], handle = SimuPathManager.handle_name, host_num = self.filter.mark, class_str = class_str_))
@@ -443,6 +440,56 @@ class SimuPath:
         # Make the jitter's literal value closer to the observed value in statistics
         return delay_, int(jitter_ / 2)
 
+    def __get_slot_jitter_param( self, input_jitter: float, slot_time: float = 20.0 ):
+        """
+        Generate a tc netem command that simulates jitter WITHOUT packet reordering
+        using slot-based delay.
+
+        Args:
+            input_jitter: Target jitter (± range, milliseconds)
+            slot_time: Slot interval; smaller = finer jitter resolution (default: 20.0ms)
+
+        Returns:
+            tuple: (slot_time, max_delay)
+        """
+
+        # max_delay chosen so that mean deviation ≈ input_jitter
+        max_delay = (input_jitter + slot_time) * 2
+
+        return slot_time, max_delay
+
+    def __get_loss_state_param(self, loss_rate: float, loss_type: str = 'random'):
+        """
+        Generate tc netem Markov loss commands with the same overall loss rate
+        but different burst characteristics.
+
+        Args:
+            loss_rate: overall packet loss rate (0 < loss_rate < 1)
+            loss_type: loss type, 'random', 'low_burst', 'mid_burst', 'high_burst'
+
+        Returns:
+            tuple: (probability_good2bad, probability_bad2good)
+        """
+
+        if not (0 < loss_rate < 1):
+            raise ValueError("loss_rate must be in (0, 1)")
+
+        # Average burst lengths for each profile
+        profiles = {
+            "random": 1.0,     # almost i.i.d
+            "burst-low": 3.0,  # mild correlation
+            "burst-medium": 10.0, # typical bad network
+            "burst-high": 50.0 # severe burst loss
+        }
+
+        if loss_type not in profiles:
+            raise ValueError(f"Invalid loss type: {loss_type}")
+
+        probability_bad2good = 1.0 / profiles[loss_type]
+        probability_good2bad = loss_rate * probability_bad2good / (1.0 - loss_rate)
+
+        return probability_good2bad, probability_bad2good
+
     @classmethod
     def from_dict(cls, data: Dict) -> 'SimuPath':
         """Create a SimuPath instance from a dictionary"""
@@ -465,7 +512,7 @@ class SimuPathManager:
     handle_name = '9527'
     lan_ifname = None
     wan_ifname = None
-    mark_range = (9527, 9559)
+    mark_range = (9528, 9560)
 
     def __new__(cls):
         if cls._instance is None:
