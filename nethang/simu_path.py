@@ -155,7 +155,7 @@ class SimuPath:
             ):
 
         class_str_ = ''
-        if throttle_type != 'off':
+        if throttle_type == 'off':
             rate_limit = SimuPathManager.MAX_RATE
 
         # If rate_limit is greater than MAX_RATE, using MAX_RATE as rate
