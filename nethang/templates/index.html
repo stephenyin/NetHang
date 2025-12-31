@@ -2333,6 +2333,7 @@
     });
 
     document.getElementById('edit-downlink-rate-type').addEventListener('change', function () {
+        updateIndicator('edit-downlink-throttle-indicator', this.value);
         const inputs = document.getElementById('edit-downlink-throttle-inputs');
         const bandwidth = document.getElementById('edit-downlink-bandwidth');
         const queueDepth = document.getElementById('edit-downlink-queue-depth');
@@ -2380,6 +2381,7 @@
     });
 
     document.getElementById('downlink-latency-type').addEventListener('change', function () {
+        updateIndicator('downlink-latency-indicator', this.value);
         const latencyInputs = document.getElementById('downlink-latency-inputs');
         const delay = document.getElementById('downlink-delay');
         const jitterContainer = document.getElementById('downlink-jitter-container');
@@ -2579,6 +2581,7 @@
     });
 
     document.getElementById('edit-downlink-loss-type').addEventListener('change', function () {
+        updateIndicator('edit-downlink-loss-indicator', this.value);
         const lossInputs = document.getElementById('edit-downlink-loss-inputs');
         const lossRate = document.getElementById('edit-downlink-packet-loss');
         const distribution = document.getElementById('edit-downlink-loss-distribution');
