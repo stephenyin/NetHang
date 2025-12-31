@@ -17,157 +17,193 @@ from . import app, CONFIG_PATH, CONFIG_FILE, MODELS_FILE, PATHS_FILE
 class ConfigManager:
     def __init__(self):
         # GitHub config URL
-        self.github_config_url = "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models.yaml"
+        self.github_config_url = "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models_v0.2.0.yaml"
 
         # Fallback config (if network fails)
         self.fallback_models = """# Nethang Fallback models
-version: 0.1.0
+version: v0.2.0
 
 components:
   delay_components:
     delay_lan: &delay_lan
       delay: 2
+      latency_type: "constant"
     delay_intercity: &delay_intercity
       delay: 15
+      latency_type: "constant"
     delay_intercontinental: &delay_intercontinental
       delay: 150
+      latency_type: "constant"
     delay_DSL: &delay_DSL
       delay: 5
+      latency_type: "constant"
     delay_cellular_LTE_uplink: &delay_cellular_LTE_uplink
       delay: 65
+      latency_type: "constant"
     delay_cellular_LTE_downlink: &delay_cellular_LTE_downlink
       delay: 50
+      latency_type: "constant"
     delay_cellular_3G: &delay_cellular_3G
       delay: 100
+      latency_type: "constant"
     delay_cellular_EDGE_uplink: &delay_cellular_EDGE_uplink
       delay: 440
+      latency_type: "constant"
     delay_cellular_EDGE_downlink: &delay_cellular_EDGE_downlink
       delay: 400
+      latency_type: "constant"
     delay_very_bad_network: &delay_very_bad_network
       delay: 500
+      latency_type: "constant"
     delay_starlink_low_latency: &delay_starlink_low_latency
       delay: 60
+      latency_type: "constant"
     delay_starlink_moderate_latency: &delay_starlink_moderate_latency
       delay: 100
+      latency_type: "constant"
     delay_starlink_high_latency: &delay_starlink_high_latency
       delay: 180
+      latency_type: "constant"
 
   jitter_components:
     jitter_moderate_wireless: &jitter_moderate_wireless
-      slot:
-        - 100
-        - 100
+      jitter: 100
+      latency_type: "jitter-reorder-off"
     jitter_bad_wireless: &jitter_bad_wireless
-      slot:
-        - 300
-        - 300
+      jitter: 250
+      latency_type: "jitter-reorder-off"
     jitter_moderate_congestion: &jitter_moderate_congestion
-      slot:
-        - 1500
-        - 2000
+      jitter: 1000
+      latency_type: "jitter-reorder-off"
     jitter_severe_congestion: &jitter_severe_congestion
-      slot:
-        - 3000
-        - 4000
+      jitter: 2000
+      latency_type: "jitter-reorder-off"
     jitter_starlink_handover: &jitter_starlink_handover
-      slot:
-        - 300
-        - 300
+      jitter: 200
+      latency_type: "jitter-reorder-off"
     jitter_wireless_handover: &jitter_wireless_handover
-      slot:
-        - 500
-        - 500
+      jitter: 100
+      latency_type: "jitter-reorder-on"
     jitter_wireless_low_snr: &jitter_wireless_low_snr
-      slot:
-        - 50
-        - 50
+      jitter: 50
+      latency_type: "jitter-reorder-off"
 
   loss_components:
     loss_slight: &loss_slight
       loss: 1
+      loss_type: "burst-low"
     loss_low: &loss_low
       loss: 5
+      loss_type: "burst-low"
     loss_moderate: &loss_moderate
       loss: 10
+      loss_type: "burst-low"
     loss_high: &loss_high
       loss: 20
+      loss_type: "burst-low"
     loss_severe: &loss_severe
       loss: 30
+      loss_type: "burst-medium"
     loss_wireless_low_snr: &loss_wireless_low_snr
       loss: 10
+      loss_type: "burst-medium"
     loss_very_bad_network: &loss_very_bad_network
       loss: 10
+      loss_type: "burst-high"
 
   rate_components:
     rate_1000M: &rate_1000M
       rate_limit: 1000000
       qdepth: 1000
+      throttle_type: "on"
     rate_1M_qdepth_1: &rate_1M_qdepth_1
       rate_limit: 1000
       qdepth: 1
+      throttle_type: "on"
     rate_1M_nlc: &rate_1M_nlc
       rate_limit: 1000
       qdepth: 20
+      throttle_type: "on"
     rate_1M_qdepth_150: &rate_1M_qdepth_150
       rate_limit: 1000
       qdepth: 150
+      throttle_type: "on"
     rate_2M_qdepth_150: &rate_2M_qdepth_150
       rate_limit: 2000
       qdepth: 150
+      throttle_type: "on"
     rate_100M_qdepth_1000: &rate_100M_qdepth_1000
       rate_limit: 100000
       qdepth: 1000
+      throttle_type: "on"
     rate_DSL_uplink: &rate_DSL_uplink
       rate_limit: 256
       qdepth: 20
+      throttle_type: "on"
     rate_DSL_downlink: &rate_DSL_downlink
       rate_limit: 2000
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_EDGE_uplink: &rate_cellular_EDGE_uplink
       rate_limit: 200
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_EDGE_downlink: &rate_cellular_EDGE_downlink
       rate_limit: 240
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_LTE_uplink: &rate_cellular_LTE_uplink
       rate_limit: 10000
       qdepth: 150
+      throttle_type: "on"
     rate_cellular_LTE_downlink: &rate_cellular_LTE_downlink
       rate_limit: 50000
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_3G_uplink: &rate_cellular_3G_uplink
       rate_limit: 330
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_3G_downlink: &rate_cellular_3G_downlink
       rate_limit: 780
       qdepth: 20
+      throttle_type: "on"
     rate_cellular_3G: &rate_cellular_3G
       rate_limit: 2000
       qdepth: 1000
+      throttle_type: "on"
     rate_wifi_uplink: &rate_wifi_uplink
       rate_limit: 33000
       qdepth: 20
+      throttle_type: "on"
     rate_wifi_downlink: &rate_wifi_downlink
       rate_limit: 40000
       qdepth: 20
+      throttle_type: "on"
     rate_starlink_uplink: &rate_starlink_uplink
       rate_limit: 15000
       qdepth: 100
+      throttle_type: "on"
     rate_starlink_downlink: &rate_starlink_downlink
       rate_limit: 50000
       qdepth: 100
+      throttle_type: "on"
     accu_rate_10_qdepth_10: &accu_rate_10_qdepth_10
       rate_limit: 10
       qdepth: 10
+      throttle_type: "on"
     accu_rate_10_qdepth_100: &accu_rate_10_qdepth_100
       rate_limit: 10
       qdepth: 100
+      throttle_type: "on"
     accu_rate_10_qdepth_1000: &accu_rate_10_qdepth_1000
       rate_limit: 10
       qdepth: 1000
+      throttle_type: "on"
     accu_rate_10_qdepth_10000: &accu_rate_10_qdepth_10000
       rate_limit: 10
       qdepth: 10000
+      throttle_type: "on"
 
 models:
   (Scenario) Elevator:
