@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nethang"
-version = "0.1.7"
+version = "0.2.0"
 description = "A web-based tool for simulating network quality"
 readme = "README.md"
 authors = [

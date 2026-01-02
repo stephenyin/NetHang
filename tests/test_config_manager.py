@@ -60,9 +60,9 @@ class TestConfigManager:
 
     def test_init(self, config_manager):
         """Test ConfigManager initialization"""
-        assert config_manager.github_config_url == "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models.yaml"
+        assert config_manager.github_config_url == "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models_v0.2.0.yaml"
         assert config_manager.fallback_models is not None
-        assert "version: 0.1.0" in config_manager.fallback_models
+        assert "version: v0.2.0" in config_manager.fallback_models
         assert "components:" in config_manager.fallback_models
         assert "models:" in config_manager.fallback_models
 
@@ -348,7 +348,7 @@ class TestConfigManager:
 
         for jitter_name in expected_jitters:
             assert jitter_name in jitter_components, f"Expected jitter component '{jitter_name}' not found"
-            assert 'slot' in jitter_components[jitter_name], f"Jitter component '{jitter_name}' missing 'slot' field"
+            assert 'jitter' in jitter_components[jitter_name], f"Jitter component '{jitter_name}' missing 'jitter' field"
 
         # Check loss components
         loss_components = components['loss_components']

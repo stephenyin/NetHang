@@ -12,6 +12,7 @@ import re
 import yaml
 import os
 import time
+import json
 from . import app, CONFIG_PATH, CONFIG_FILE, MODELS_FILE, PATHS_FILE, IPT_LOCK_FILE
 from multiprocessing import Process
 from dataclasses import dataclass
@@ -39,7 +40,7 @@ class SimuSettings:
 
     def get_default_value(self, key):
         if key == 'rate_limit':
-            return 32000000
+            return 1000000
         elif key == 'qdepth':
             return 1000
         elif key == 'loss':
@@ -48,6 +49,12 @@ class SimuSettings:
             return 0
         elif key == 'jitter':
             return 0
+        elif key == 'loss_type':
+            return 'off'
+        elif key == 'latency_type':
+            return 'off'
+        elif key == 'throttle_type':
+            return 'off'
         else:
             app.logger.info(f"Not implemented key: {key}")
 
@@ -59,7 +66,9 @@ class SimuSettings:
             self.restrict_settings['loss'] == other.restrict_settings['loss'] and \
             self.restrict_settings['delay'] == other.restrict_settings['delay'] and \
             self.restrict_settings['jitter'] == other.restrict_settings['jitter'] and \
-            self.restrict_settings['reorder_allowed'] == other.restrict_settings['reorder_allowed']
+            self.restrict_settings['loss_type'] == other.restrict_settings['loss_type'] and \
+            self.restrict_settings['latency_type'] == other.restrict_settings['latency_type'] and \
+            self.restrict_settings['throttle_type'] == other.restrict_settings['throttle_type']
         )
 
     def to_dict(self):
@@ -133,21 +142,25 @@ class SimuPath:
             iface = self.__direction[direction_]['to'], handle = SimuPathManager.handle_name, rate = SimuPathManager.MAX_RATE))
 
     def _apply_tc(self, direction_ : str, opt : str = 'add',
-            rate_limit : int = 32000000, rate_ceil : int = 32000000,
+            rate_limit : int = 1000000, rate_ceil : int = 1000000,
             rate_burst : int = 0, rate_cburst : int = 0,
             qdepth : int = 1000,
             loss : float = 0.0,
             delay : int = 0,
             jitter : int = 0,
             jitter_dist : str = 'normal',
-            slot : list = [0, 0],
-            reorder_allowed : bool = False
+            loss_type : str = 'off',
+            latency_type : str = 'off',
+            throttle_type : str = 'off'
             ):
 
         class_str_ = ''
+        if throttle_type == 'off':
+            rate_limit = SimuPathManager.MAX_RATE
+
         # If rate_limit is greater than MAX_RATE, using MAX_RATE as rate
         # Otherwise, using rate_limit as rate
-        if rate_limit > SimuPathManager.MAX_RATE:
+        if rate_limit >= SimuPathManager.MAX_RATE:
             class_str_ += ' rate {}Gbit'.format(SimuPathManager.MAX_RATE / 1000000)
         else:
             class_str_ += ' rate {}Kbit'.format(rate_limit)
@@ -174,16 +187,37 @@ class SimuPath:
             class_str_ += ' cburst {}KB'.format(rate_cburst)
 
         netem_str_ = ''
-        netem_str_ += f' limit {qdepth}'
-        delay_, jitter_ = self.__get_delay_jitter_param(delay, jitter)
-        if delay_ != 0 or jitter_ != 0:
-            netem_str_ += ' delay'
-            netem_str_ += f' {delay_}ms'
-            if jitter_ != 0:
-                netem_str_ += f' {jitter_}ms distribution {jitter_dist}'
-        netem_str_ += f' loss {loss}%'
-        netem_str_ += f' slot {slot[0]}ms {slot[1]}ms'
+        netem_str_ += f'limit {qdepth}'
 
+        if latency_type != 'off':
+            # If jitter-reorder-off is selected (jitter > 0 and latency_type == 'jitter-reorder-off'),
+            # use slot for jitter instead of delay+jitter approach
+            use_slot_for_jitter = (jitter > 0 and latency_type == 'jitter-reorder-off')
+
+            if use_slot_for_jitter:
+                min_delay, max_delay = self.__get_slot_jitter_param(jitter)
+
+                # Use slot for jitter
+                netem_str_ += f' delay {delay}ms slot {min_delay}ms {max_delay}ms'
+            else:
+                # Use delay + jitter approach if latency_type is not 'jitter-reorder-off'
+                delay_, jitter_ = self.__get_delay_jitter_param(delay, jitter)
+                if delay_ != 0 or jitter_ != 0:
+                    netem_str_ += f' delay {delay_}ms'
+                    if jitter_ != 0:
+                        netem_str_ += f' {jitter_}ms distribution {jitter_dist}'
+                # Set slot to 0 0 to make sure slot is not used
+                netem_str_ += f' slot 0 0'
+
+        if loss_type != 'off':
+            if loss_type == 'random':
+                netem_str_ += f' loss {loss:.6f}%'
+            else:
+                probability_good2bad, probability_bad2good = self.__get_loss_state_param(loss / 100.0, loss_type)
+                netem_str_ += f' loss gemodel {probability_good2bad*100:.6f}% {probability_bad2good*100:.6f}%'
+
+        app.logger.info(f"class_str: {class_str_}")
+        app.logger.info(f"netem_str: {netem_str_}")
         SimuPathManager.run_cmd('tc class {opt} dev {iface} parent {handle}: classid {handle}:{host_num} htb {class_str} quantum 60000'.format(
             opt = opt, iface = self.__direction[direction_]['to'], handle = SimuPathManager.handle_name, host_num = self.filter.mark, class_str = class_str_))
         SimuPathManager.run_cmd('tc qdisc {opt} dev {iface} parent {handle}:{host_num} handle {host_num}: netem {netem_str}'.format(
@@ -239,6 +273,7 @@ class SimuPath:
                 for model_timeslot in model_timeline:
 
                     merged_model = SimuPathManager.merge_dicts(model_global, model_timeslot)
+                    app.logger.info(f"merged_model: {json.dumps(merged_model, indent=2)}")
 
                     if is_first_timeslot:
                         opt_ = 'add'
@@ -271,8 +306,9 @@ class SimuPath:
             delay = config.get('delay', 0),
             jitter = config.get('jitter', 0),
             jitter_dist = config.get('jitter_dist', 'normal'),
-            slot = config.get('slot', [0, 0]),
-            reorder_allowed = config.get('reorder_allowed', False),
+            loss_type = config.get('loss_type', 'off'),
+            latency_type = config.get('latency_type', 'off'),
+            throttle_type = config.get('throttle_type', 'off')
         )
 
     def _simu_path_worker(self):
@@ -412,6 +448,56 @@ class SimuPath:
         # Make the jitter's literal value closer to the observed value in statistics
         return delay_, int(jitter_ / 2)
 
+    def __get_slot_jitter_param( self, input_jitter: float, slot_time: float = 20.0 ):
+        """
+        Generate a tc netem command that simulates jitter WITHOUT packet reordering
+        using slot-based delay.
+
+        Args:
+            input_jitter: Target jitter (± range, milliseconds)
+            slot_time: Slot interval; smaller = finer jitter resolution (default: 20.0ms)
+
+        Returns:
+            tuple: (slot_time, max_delay)
+        """
+
+        # max_delay chosen so that mean deviation ≈ input_jitter
+        max_delay = (input_jitter + slot_time) * 2
+
+        return slot_time, max_delay
+
+    def __get_loss_state_param(self, loss_rate: float, loss_type: str = 'random'):
+        """
+        Generate tc netem Markov loss commands with the same overall loss rate
+        but different burst characteristics.
+
+        Args:
+            loss_rate: overall packet loss rate (0 < loss_rate < 1)
+            loss_type: loss type, 'random', 'burst-low', 'burst-medium', 'burst-high'
+
+        Returns:
+            tuple: (probability_good2bad, probability_bad2good)
+        """
+
+        if not (0 < loss_rate < 1):
+            raise ValueError("loss_rate must be in (0, 1)")
+
+        # Average burst lengths for each profile
+        profiles = {
+            "random": 1.0,     # almost i.i.d
+            "burst-low": 3.0,  # mild correlation
+            "burst-medium": 10.0, # typical bad network
+            "burst-high": 50.0 # severe burst loss
+        }
+
+        if loss_type not in profiles:
+            raise ValueError(f"Invalid loss type: {loss_type}")
+
+        probability_bad2good = 1.0 / profiles[loss_type]
+        probability_good2bad = loss_rate * probability_bad2good / (1.0 - loss_rate)
+
+        return probability_good2bad, probability_bad2good
+
     @classmethod
     def from_dict(cls, data: Dict) -> 'SimuPath':
         """Create a SimuPath instance from a dictionary"""
@@ -430,11 +516,11 @@ class SimuPathManager:
 
     PRIO = 2
     OVERHEAD = 0
-    MAX_RATE = 32000000 # 32Gbps
+    MAX_RATE = 1000000 # 32Gbps
     handle_name = '9527'
     lan_ifname = None
     wan_ifname = None
-    mark_range = (9527, 9559)
+    mark_range = (9528, 9560)
 
     def __new__(cls):
         if cls._instance is None:
