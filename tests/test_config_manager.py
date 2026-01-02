@@ -60,7 +60,7 @@ class TestConfigManager:
 
     def test_init(self, config_manager):
         """Test ConfigManager initialization"""
-        assert config_manager.github_config_url == "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models.yaml"
+        assert config_manager.github_config_url == "https://raw.githubusercontent.com/stephenyin/nethang/main/config_files/models_v0.2.0.yaml"
         assert config_manager.fallback_models is not None
         assert "version: v0.2.0" in config_manager.fallback_models
         assert "components:" in config_manager.fallback_models
