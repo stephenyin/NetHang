@@ -348,7 +348,7 @@ class TestConfigManager:
 
         for jitter_name in expected_jitters:
             assert jitter_name in jitter_components, f"Expected jitter component '{jitter_name}' not found"
-            assert 'slot' in jitter_components[jitter_name], f"Jitter component '{jitter_name}' missing 'slot' field"
+            assert 'jitter' in jitter_components[jitter_name], f"Jitter component '{jitter_name}' missing 'jitter' field"
 
         # Check loss components
         loss_components = components['loss_components']
