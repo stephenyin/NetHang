@@ -25,11 +25,13 @@ Unlike traditional network impairment tools that target backbone network quality
 
 ## Features
 
-- Traffic rate limiting and shaping
-- Network latency and latency variation simulation
-- Packet loss simulation
-- Support for both uplink and downlink traffic control
 - Configurable traffic rules and models
+- Traffic rate limiting and shaping
+- Throttle queue depth control
+- Network latency and latency variation simulation
+- Jitter simulation with and without reordering allowed
+- Packet loss with random and burst support
+- Support for both uplink and downlink traffic control
 - Real-time traffic statistics display
 
 ## Requirements
