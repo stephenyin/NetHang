@@ -6,7 +6,7 @@
 
 NetHang is a web-based tool designed to simulate network quality, focusing on the diversity of last-mile network conditions. For modern internet applications and services with high real-time requirements, NetHang offers a stable, reentrant, customizable, and easily extensible network quality simulation system, helping to achieve low-latency and high-quality internet services.
 
-<img src="https://raw.githubusercontent.com/stephenyin/NetHang/146e2aa772b5c4bf92e3f5e52d2488e098a1ce6d/assets/nh-10.gif" alt="Add Path" width="1080"/>
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/2cbd1de5542e3487636128daccb566f1ddbda729/assets/nh-10.gif" alt="Add Path" width="1080"/>
 
 Unlike traditional network impairment tools that target backbone network quality between servers and switches, NetHang is optimized for:
 
@@ -15,9 +15,9 @@ Unlike traditional network impairment tools that target backbone network quality
     - UE <--> Cellular <--> ISP edge nodes <--> APP servers
     - UE <--> Air interface <--> Satellite <--> APP servers
 
-<img src="https://raw.githubusercontent.com/stephenyin/NetHang/e5f090958d180be880aaa0a6f1af644392fe1cf9/assets/nh-01.gif" alt="Start Simulation" width="1080"/>
+- The current network model is built and simplified based on existing network quality data modeling, while also supporting users to easily customize the network models they need for testing in YAML format. The following image shows the StarLink network simulation ( Queuing changes every 20s - 30s caused by Satellite handover ):
 
-- The current network model is built and simplified based on existing network quality data modeling, while also supporting users to easily customize the network models they need for testing in YAML format.
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/c6bca493d8c2fc6600b025ece99c0106e8f9e1a7/assets/model-starlink.gif" alt="StarLink Simulation" width="1080"/>
 
 - NetHang clearly displays the differences in data traffic before and after simulation, as well as the state of the simulation conditions.
 
@@ -28,9 +28,19 @@ Unlike traditional network impairment tools that target backbone network quality
 - Configurable traffic rules and models
 - Traffic rate limiting and shaping
 - Throttle queue depth control
-- Network latency and latency variation simulation
+
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/c6bca493d8c2fc6600b025ece99c0106e8f9e1a7/assets/throttle-settings-0.png" alt="Throttle Settings" width="480"/>
+
+- Network latency and latency variation (Jitter) simulation
 - Jitter simulation with and without reordering allowed
+
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/c6bca493d8c2fc6600b025ece99c0106e8f9e1a7/assets/latency-settings-0.png" alt="Latency Settings" width="480"/>
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/c6bca493d8c2fc6600b025ece99c0106e8f9e1a7/assets/latency-settings-1.png" alt="Latency Settings" width="480"/>
+
 - Packet loss with random and burst support
+
+<img src="https://raw.githubusercontent.com/stephenyin/NetHang/c6bca493d8c2fc6600b025ece99c0106e8f9e1a7/assets/loss-settings-0.png" alt="Loss Settings" width="480"/>
+
 - Support for both uplink and downlink traffic control
 - Real-time traffic statistics display
 
