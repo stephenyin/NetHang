@@ -40,7 +40,7 @@ class SimuSettings:
 
     def get_default_value(self, key):
         if key == 'rate_limit':
-            return 32000000
+            return 1000000
         elif key == 'qdepth':
             return 1000
         elif key == 'loss':
@@ -142,7 +142,7 @@ class SimuPath:
             iface = self.__direction[direction_]['to'], handle = SimuPathManager.handle_name, rate = SimuPathManager.MAX_RATE))
 
     def _apply_tc(self, direction_ : str, opt : str = 'add',
-            rate_limit : int = 32000000, rate_ceil : int = 32000000,
+            rate_limit : int = 1000000, rate_ceil : int = 1000000,
             rate_burst : int = 0, rate_cburst : int = 0,
             qdepth : int = 1000,
             loss : float = 0.0,
@@ -516,7 +516,7 @@ class SimuPathManager:
 
     PRIO = 2
     OVERHEAD = 0
-    MAX_RATE = 32000000 # 32Gbps
+    MAX_RATE = 1000000 # 32Gbps
     handle_name = '9527'
     lan_ifname = None
     wan_ifname = None

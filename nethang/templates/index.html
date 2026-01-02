@@ -355,7 +355,7 @@
                                                                     style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-bandwidth" name="uplink_rate_limit"
-                                                                    value="32000000" disabled>
+                                                                    value="1000000" min="1" max="1000000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" style="display: none;">
@@ -375,7 +375,7 @@
                                                                     (Packets)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-queue-depth" name="uplink_qdepth"
-                                                                    value="1000" min="1" disabled>
+                                                                    value="1000" min="1" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -401,7 +401,7 @@
                                                                     style="font-size: 0.8rem;">Delay (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-delay" name="uplink_delay" value="0"
-                                                                    disabled>
+                                                                    min="0" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" id="uplink-jitter-container" style="display: none;">
@@ -410,7 +410,7 @@
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-jitter" name="uplink_jitter" value="0"
-                                                                    disabled>
+                                                                    min="0" max="4000" disabled>
                                                                 <input type="hidden" id="uplink-reorder" name="uplink_reorder" value="false">
                                                             </div>
                                                         </div>
@@ -438,7 +438,7 @@
                                                                     style="font-size: 0.8rem;">Loss Rate (%)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="uplink-packet-loss" name="uplink_loss" value="0"
-                                                                    step="0.1" min="0" max="100" disabled>
+                                                                    step="0.1" min="0" max="99.999" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -488,7 +488,7 @@
                                                                     style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-bandwidth" name="downlink_rate_limit"
-                                                                    value="32000000" disabled>
+                                                                    value="1000000" min="1" max="1000000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" style="display: none;">
@@ -508,7 +508,7 @@
                                                                     (Packets)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-queue-depth" name="downlink_qdepth"
-                                                                    value="1000" min="1" disabled>
+                                                                    value="1000" min="1" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -534,7 +534,7 @@
                                                                     style="font-size: 0.8rem;">Delay (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-delay" name="downlink_delay" value="0"
-                                                                    disabled>
+                                                                    min="0" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" id="downlink-jitter-container" style="display: none;">
@@ -543,7 +543,7 @@
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-jitter" name="downlink_jitter"
-                                                                    value="0" disabled>
+                                                                    value="0" min="0" max="4000" disabled>
                                                                 <input type="hidden" id="downlink-reorder" name="downlink_reorder" value="false">
                                                             </div>
                                                         </div>
@@ -571,7 +571,7 @@
                                                                     style="font-size: 0.8rem;">Loss Rate (%)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="downlink-packet-loss" name="downlink_loss"
-                                                                    value="0" step="0.1" min="0" max="100" disabled>
+                                                                    value="0" step="0.1" min="0" max="99.999" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -702,8 +702,8 @@
                                                                     style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-bandwidth"
-                                                                    name="edit_uplink_rate_limit" value="32000000"
-                                                                    disabled>
+                                                                    name="edit_uplink_rate_limit" value="1000000"
+                                                                    min="1" max="1000000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" style="display: none;">
@@ -724,7 +724,7 @@
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-queue-depth"
                                                                     name="edit_uplink_queue_depth" value="1000" min="1"
-                                                                    disabled>
+                                                                    max="10000" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -750,7 +750,7 @@
                                                                     style="font-size: 0.8rem;">Delay (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-delay" name="edit_uplink_delay"
-                                                                    value="0" disabled>
+                                                                    value="0" min="0" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" id="edit-uplink-jitter-container" style="display: none;">
@@ -759,7 +759,7 @@
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-jitter" name="edit_uplink_jitter"
-                                                                    value="0" disabled>
+                                                                    value="0" min="0" max="4000" disabled>
                                                                 <input type="hidden" id="edit-uplink-reorder" name="edit_uplink_reorder" value="false">
                                                             </div>
                                                         </div>
@@ -787,7 +787,7 @@
                                                                     style="font-size: 0.8rem;">Loss Rate (%)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-uplink-packet-loss" name="edit_uplink_loss"
-                                                                    value="0" step="0.1" min="0" max="100" disabled>
+                                                                    value="0" step="0.1" min="0" max="99.999" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -837,8 +837,8 @@
                                                                     style="font-size: 0.8rem;">Rate Limit (Kbps)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-bandwidth"
-                                                                    name="edit_downlink_rate_limit" value="32000000"
-                                                                    disabled>
+                                                                    name="edit_downlink_rate_limit" value="1000000"
+                                                                    min="1" max="1000000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" style="display: none;">
@@ -859,7 +859,7 @@
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-queue-depth"
                                                                     name="edit_downlink_queue_depth" value="1000"
-                                                                    min="1" disabled>
+                                                                    min="1" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -885,7 +885,7 @@
                                                                     style="font-size: 0.8rem;">Delay (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-delay" name="edit_downlink_delay"
-                                                                    value="0" disabled>
+                                                                    value="0" min="0" max="10000" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6" id="edit-downlink-jitter-container" style="display: none;">
@@ -894,7 +894,7 @@
                                                                     style="font-size: 0.8rem;">Jitter (ms)</label>
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-jitter"
-                                                                    name="edit_downlink_jitter" value="0" disabled>
+                                                                    name="edit_downlink_jitter" value="0" min="0" max="4000" disabled>
                                                                 <input type="hidden" id="edit-downlink-reorder" name="edit_downlink_reorder" value="false">
                                                             </div>
                                                         </div>
@@ -924,7 +924,7 @@
                                                                 <input type="number" class="form-control"
                                                                     id="edit-downlink-packet-loss"
                                                                     name="edit_downlink_loss" value="0" step="0.1"
-                                                                    min="0" max="100" disabled>
+                                                                    min="0" max="99.999" disabled>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1437,7 +1437,7 @@
             if (path.simu_settings.uplink.mode === 'restrict' && path.simu_settings.uplink.restrict_settings) {
                 uplinkRestrictionRow.style.display = 'table-row';
                 const restrict = path.simu_settings.uplink.restrict_settings;
-                document.getElementById('pathUplinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
+                document.getElementById('pathUplinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 1000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
                 document.getElementById('pathUplinkQueueDepth').textContent = `${restrict.qdepth} packets`;
                 // Combine Delay and Jitter in one row
                 if (restrict.latency_type === 'off') {
@@ -1456,7 +1456,7 @@
             if (path.simu_settings.downlink.mode === 'restrict' && path.simu_settings.downlink.restrict_settings) {
                 downlinkRestrictionRow.style.display = 'table-row';
                 const restrict = path.simu_settings.downlink.restrict_settings;
-                document.getElementById('pathDownlinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 32000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
+                document.getElementById('pathDownlinkRate').textContent = restrict.rate_limit === null || restrict.rate_limit === 1000000 ? 'Unlimited' : `${restrict.rate_limit} Kbps`;
                 document.getElementById('pathDownlinkQueueDepth').textContent = `${restrict.qdepth} packets`;
                 // Combine Delay and Jitter in one row
                 if (restrict.latency_type === 'off') {
@@ -1605,7 +1605,7 @@
                     let throttleType = restrict.throttle_type;
                     if (!throttleType) {
                         // Backward compatibility: calculate from rate_limit
-                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 1000000;
                         throttleType = isUnlimited ? 'off' : 'on';
                     }
                     const rateType = document.getElementById('edit-uplink-rate-type');
@@ -1690,7 +1690,7 @@
                     let throttleType = restrict.throttle_type;
                     if (!throttleType) {
                         // Backward compatibility: calculate from rate_limit
-                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 32000000;
+                        const isUnlimited = restrict.rate_limit === null || restrict.rate_limit === 1000000;
                         throttleType = isUnlimited ? 'off' : 'on';
                     }
                     const downlinkRateType = document.getElementById('edit-downlink-rate-type');
@@ -1922,6 +1922,142 @@
         return true;
     }
 
+    // Validate path settings constraints
+    function validatePathSettings(formData, isEdit = false) {
+        const prefix = isEdit ? 'edit_' : '';
+        const qdepthField = isEdit ? 'queue_depth' : 'qdepth';
+
+        // Validate uplink settings if restrict mode
+        if (formData.get(prefix + 'uplink_mode') === 'restrict') {
+            const throttleType = formData.get(prefix + 'uplink_rate_type');
+            const latencyType = formData.get(prefix + 'uplink_latency_type');
+            const lossType = formData.get(prefix + 'uplink_loss_type');
+
+            // Validate throttle settings if throttle is on
+            if (throttleType === 'on') {
+                const rateLimitVal = formData.get(prefix + 'uplink_rate_limit');
+                const qdepthVal = formData.get(prefix + 'uplink_' + qdepthField);
+
+                if (rateLimitVal !== null && rateLimitVal !== '') {
+                    const rateLimit = parseInt(rateLimitVal);
+                    if (isNaN(rateLimit) || rateLimit < 1 || rateLimit > 1000000) {
+                        alert('Uplink Rate Limit must be an integer between 1 and 1000000.');
+                        return false;
+                    }
+                }
+
+                if (qdepthVal !== null && qdepthVal !== '') {
+                    const qdepth = parseInt(qdepthVal);
+                    if (isNaN(qdepth) || qdepth < 1 || qdepth > 10000) {
+                        alert('Uplink Queue Depth must be an integer between 1 and 10000.');
+                        return false;
+                    }
+                }
+            }
+
+            // Validate latency settings if latency is not off
+            if (latencyType && latencyType !== 'off') {
+                const delayVal = formData.get(prefix + 'uplink_delay');
+                const jitterVal = formData.get(prefix + 'uplink_jitter');
+
+                if (delayVal !== null && delayVal !== '') {
+                    const delay = parseInt(delayVal);
+                    if (isNaN(delay) || delay < 0 || delay > 10000) {
+                        alert('Uplink Delay must be an integer between 0 and 10000.');
+                        return false;
+                    }
+                }
+
+                if (jitterVal !== null && jitterVal !== '' && (latencyType === 'jitter-reorder-on' || latencyType === 'jitter-reorder-off')) {
+                    const jitter = parseInt(jitterVal);
+                    if (isNaN(jitter) || jitter < 0 || jitter > 4000) {
+                        alert('Uplink Jitter must be an integer between 0 and 4000.');
+                        return false;
+                    }
+                }
+            }
+
+            // Validate loss settings if loss is not off
+            if (lossType && lossType !== 'off') {
+                const lossVal = formData.get(prefix + 'uplink_loss');
+
+                if (lossVal !== null && lossVal !== '') {
+                    const loss = parseFloat(lossVal);
+                    if (isNaN(loss) || loss < 0 || loss >= 100) {
+                        alert('Uplink Loss Rate must be a number between 0 and 100 (exclusive).');
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Validate downlink settings if restrict mode
+        if (formData.get(prefix + 'downlink_mode') === 'restrict') {
+            const throttleType = formData.get(prefix + 'downlink_rate_type');
+            const latencyType = formData.get(prefix + 'downlink_latency_type');
+            const lossType = formData.get(prefix + 'downlink_loss_type');
+
+            // Validate throttle settings if throttle is on
+            if (throttleType === 'on') {
+                const rateLimitVal = formData.get(prefix + 'downlink_rate_limit');
+                const qdepthVal = formData.get(prefix + 'downlink_' + qdepthField);
+
+                if (rateLimitVal !== null && rateLimitVal !== '') {
+                    const rateLimit = parseInt(rateLimitVal);
+                    if (isNaN(rateLimit) || rateLimit < 1 || rateLimit > 1000000) {
+                        alert('Downlink Rate Limit must be an integer between 1 and 1000000.');
+                        return false;
+                    }
+                }
+
+                if (qdepthVal !== null && qdepthVal !== '') {
+                    const qdepth = parseInt(qdepthVal);
+                    if (isNaN(qdepth) || qdepth < 1 || qdepth > 10000) {
+                        alert('Downlink Queue Depth must be an integer between 1 and 10000.');
+                        return false;
+                    }
+                }
+            }
+
+            // Validate latency settings if latency is not off
+            if (latencyType && latencyType !== 'off') {
+                const delayVal = formData.get(prefix + 'downlink_delay');
+                const jitterVal = formData.get(prefix + 'downlink_jitter');
+
+                if (delayVal !== null && delayVal !== '') {
+                    const delay = parseInt(delayVal);
+                    if (isNaN(delay) || delay < 0 || delay > 10000) {
+                        alert('Downlink Delay must be an integer between 0 and 10000.');
+                        return false;
+                    }
+                }
+
+                if (jitterVal !== null && jitterVal !== '' && (latencyType === 'jitter-reorder-on' || latencyType === 'jitter-reorder-off')) {
+                    const jitter = parseInt(jitterVal);
+                    if (isNaN(jitter) || jitter < 0 || jitter > 4000) {
+                        alert('Downlink Jitter must be an integer between 0 and 4000.');
+                        return false;
+                    }
+                }
+            }
+
+            // Validate loss settings if loss is not off
+            if (lossType && lossType !== 'off') {
+                const lossVal = formData.get(prefix + 'downlink_loss');
+
+                if (lossVal !== null && lossVal !== '') {
+                    const loss = parseFloat(lossVal);
+                    if (isNaN(loss) || loss < 0 || loss >= 100) {
+                        alert('Downlink Loss Rate must be a number between 0 and 100 (exclusive).');
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     // Handle form submission for edit path
     function submitEditPath() {
         const form = document.getElementById('editPathForm');
@@ -1937,7 +2073,12 @@
             }
         }
 
-        // Validate queue depth values
+        // Validate path settings constraints
+        if (!validatePathSettings(formData, true)) {
+            return;
+        }
+
+        // Validate queue depth values (legacy check, now covered by validatePathSettings)
         const uplinkQdepth = parseInt(formData.get('edit_uplink_queue_depth'));
         const downlinkQdepth = parseInt(formData.get('edit_downlink_queue_depth'));
 
@@ -2026,7 +2167,12 @@
             }
         }
 
-        // Validate queue depth values
+        // Validate path settings constraints
+        if (!validatePathSettings(formData, false)) {
+            return;
+        }
+
+        // Validate queue depth values (legacy check, now covered by validatePathSettings)
         const uplinkQdepth = parseInt(formData.get('uplink_qdepth'));
         const downlinkQdepth = parseInt(formData.get('downlink_qdepth'));
 
@@ -2220,8 +2366,8 @@
         // Update indicators
         updateIndicator('uplink-throttle-indicator', 'off');
         updateIndicator('downlink-throttle-indicator', 'off');
-        document.getElementById('uplink-bandwidth').value = '32000000';
-        document.getElementById('downlink-bandwidth').value = '32000000';
+        document.getElementById('uplink-bandwidth').value = '1000000';
+        document.getElementById('downlink-bandwidth').value = '1000000';
         document.getElementById('uplink-bandwidth').disabled = true;
         document.getElementById('downlink-bandwidth').disabled = true;
 
@@ -2291,7 +2437,7 @@
         const queueDepth = document.getElementById('uplink-queue-depth');
         if (this.value === 'off') {
             inputs.style.display = 'none';
-            bandwidth.value = '32000000';
+            bandwidth.value = '1000000';
             bandwidth.disabled = true;
             queueDepth.value = '1000';
         } else {
@@ -2307,7 +2453,7 @@
         const queueDepth = document.getElementById('downlink-queue-depth');
         if (this.value === 'off') {
             inputs.style.display = 'none';
-            bandwidth.value = '32000000';
+            bandwidth.value = '1000000';
             bandwidth.disabled = true;
             queueDepth.value = '1000';
         } else {
@@ -2323,7 +2469,7 @@
         const queueDepth = document.getElementById('edit-uplink-queue-depth');
         if (this.value === 'off') {
             inputs.style.display = 'none';
-            bandwidth.value = '32000000';
+            bandwidth.value = '1000000';
             bandwidth.disabled = true;
             queueDepth.value = '1000';
         } else {
@@ -2339,7 +2485,7 @@
         const queueDepth = document.getElementById('edit-downlink-queue-depth');
         if (this.value === 'off') {
             inputs.style.display = 'none';
-            bandwidth.value = '32000000';
+            bandwidth.value = '1000000';
             bandwidth.disabled = true;
             queueDepth.value = '1000';
         } else {
