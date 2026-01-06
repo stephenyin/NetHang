@@ -58,6 +58,11 @@
             margin-bottom: 2rem;
         }
 
+        /* Remove margin from nested submenu list-groups */
+        .collapse .list-group {
+            margin-bottom: 0;
+        }
+
         .list-group-item {
             padding: 0.75rem 1rem;
             border-left: none;
@@ -66,6 +71,11 @@
 
         .list-group-item:first-child {
             border-top: none;
+        }
+
+        /* Remove bottom border from last submenu item */
+        .collapse .list-group-item:last-child {
+            border-bottom: none;
         }
 
         /* Content section styling */
@@ -177,6 +187,27 @@
             color: #dcdcaa;
         }
 
+        /* Responsive video container */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 80%;
+            margin: 1.5rem auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             body {
@@ -200,6 +231,10 @@
                 padding: 1rem;
                 margin: 1rem 0;
             }
+
+            .video-container {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -215,8 +250,18 @@
             <div class="col-md-3 mb-5">
                 <!-- Navigation -->
                 <div class="list-group position-sticky top-0">
-                    <a href="#overview" class="list-group-item list-group-item-action"><i class="bi bi-tv"></i>
-                        Overview</a>
+                    <a href="#overview" class="list-group-item list-group-item-action" data-bs-toggle="collapse"
+                        data-bs-target="#overviewSubmenu" aria-expanded="true">
+                        <i class="bi bi-tv"></i> Overview
+                        <i class="bi bi-chevron-down float-end"></i>
+                    </a>
+                    <div class="collapse show" id="overviewSubmenu">
+                        <div class="list-group list-group-flush">
+                            <a href="#video" class="list-group-item list-group-item-action ps-4"
+                                style="border-left: 2px solid rgba(10, 10, 10, 0.8); border-right: 2px solid rgba(10, 10, 10, 0.8);"><i
+                                    class="bi bi-play-circle"></i> Video Tutorial</a>
+                        </div>
+                    </div>
                     <a href="#preparation" class="list-group-item list-group-item-action"><i class="bi bi-tools"></i>
                         Preparation</a>
                     <a href="#installation" class="list-group-item list-group-item-action"><i
@@ -274,6 +319,23 @@
                         <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">How NetHang looks like
                         </figcaption>
                     </figure>
+                    <div id="video" class="mb-5">
+                        <h3>How NetHang Works</h3>
+                        <p>Watch this video to see NetHang in action and learn how to use it for network quality simulation:</p>
+                        <figure class="text-center">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/Mi3pPmpDwTg"
+                                title="A Great Way to do the Weak Network Test - NetHang"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <figcaption class="mt-2" style="font-size: 1rem; font-style: italic;">NetHang Tutorial Video
+                        </figcaption>
+                    </figure>
+                    </div>
                 </div>
 
                 <div id="preparation" class="mb-5">
