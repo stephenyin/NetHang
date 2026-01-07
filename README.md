@@ -92,6 +92,187 @@ Unlike traditional network impairment tools that target backbone network quality
 - Python **3.8** or higher
 - Linux system with `tc` and `iptables` support
 - Root privileges for traffic control operations
+- Ubuntu 22.04 LTS (or similar Linux distribution)
+- At least **TWO** network interface cards (NICs)
+
+---
+
+## ⚙️ System Configuration
+
+Before installing NetHang, you need to configure your Linux system as a software router. Follow the steps below to set up the required dependencies and network settings.
+
+### 📦 Dependencies and Permissions
+
+Install the required packages:
+
+```bash
+sudo apt update
+sudo apt install iproute2 iptables libcap2-bin
+```
+
+Check command paths:
+
+```bash
+which tc
+which iptables
+```
+
+They are typically located in `/sbin/tc` and `/sbin/iptables` (or `/usr/sbin/tc` and `/usr/sbin/iptables`).
+
+Grant the `CAP_NET_ADMIN` capability, which is required for `tc` and `iptables`:
+
+```bash
+sudo setcap cap_net_admin+ep /usr/sbin/tc
+sudo setcap cap_net_admin+ep /usr/sbin/xtables-nft-multi
+```
+
+Verify the permissions:
+
+```bash
+iptables -L
+tc qdisc add dev lo root netem delay 1ms
+tc qdisc del dev lo root
+```
+
+If the output is without errors, the permissions are set correctly. If not, you may need to reboot the machine.
+
+### 🔄 Enabling IP Forwarding
+
+**Step 1: Check Current IP Forwarding Status**
+
+Before proceeding, check whether IP forwarding is currently enabled on your Ubuntu machine:
+
+```bash
+cat /proc/sys/net/ipv4/ip_forward
+```
+
+If the output is `0`, IP forwarding is disabled. If it's `1`, it's already enabled.
+
+**Step 2: Enable IP Forwarding**
+
+To enable IP forwarding temporarily (valid until the next reboot), run:
+
+```bash
+sudo sysctl -w net.ipv4.ip_forward=1
+```
+
+To make the change permanent, edit the `/etc/sysctl.conf` file and uncomment or add the line:
+
+```bash
+net.ipv4.ip_forward=1
+```
+
+Then, apply the changes:
+
+```bash
+sudo sysctl -p /etc/sysctl.conf
+```
+
+### 🌐 Configuring Network Interfaces
+
+**Step 1: List Network Interfaces**
+
+Identify your network interfaces using the `ip` command:
+
+```bash
+ip addr
+```
+
+You should see a list of interfaces like `eth0`, `eth1`, etc.
+
+**Step 2: Configure Network Interfaces**
+
+Edit the network configuration files for your interfaces. For example, to configure `eth0` and `eth1`, edit `/etc/network/interfaces`:
+
+```bash
+sudo vi /etc/network/interfaces
+```
+
+Here's a sample configuration for `eth0` and `eth1`:
+
+```bash
+# eth0 - Internet-facing interface
+auto eth0
+iface eth0 inet dhcp
+
+# eth1 - Internal LAN interface
+auto eth1
+iface eth1 inet static
+    address 192.168.1.1
+    netmask 255.255.255.0
+```
+
+**Step 3: Apply Network Configuration Changes**
+
+Apply the changes to network interfaces:
+
+```bash
+sudo systemctl restart networking
+```
+
+### 🔀 Configuring NAT (Network Address Translation)
+
+To enable NAT for outbound traffic from your LAN, use `iptables`:
+
+```bash
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+Make the change permanent by installing `iptables-persistent`:
+
+```bash
+sudo apt update
+sudo apt install iptables-persistent
+```
+
+Follow the prompts to save the current rules.
+
+### 📡 Setting Up DHCP Server (Optional)
+
+This step is optional. If you want to use DHCP to assign IP addresses to devices on the LAN, you can configure the DHCP server.
+
+**Step 1: Install DHCP Server**
+
+If you want your Ubuntu router to assign IP addresses to devices on the LAN, install the DHCP server software:
+
+```bash
+sudo apt update
+sudo apt install isc-dhcp-server
+```
+
+**Step 2: Configure DHCP Server**
+
+Edit the DHCP server configuration file:
+
+```bash
+sudo vi /etc/dhcp/dhcpd.conf
+```
+
+Here's a sample configuration:
+
+```bash
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.10 192.168.1.50;
+  option routers 192.168.1.1;
+  option domain-name-servers 8.8.8.8, 8.8.4.4;
+}
+```
+
+**Step 3: Start DHCP Server**
+
+Start the DHCP server:
+
+```bash
+sudo systemctl start isc-dhcp-server
+```
+
+**Step 4: Enable DHCP Server at Boot**
+
+To ensure the DHCP server starts at boot:
+
+```bash
+sudo systemctl enable isc-dhcp-server
+```
 
 ---
 
